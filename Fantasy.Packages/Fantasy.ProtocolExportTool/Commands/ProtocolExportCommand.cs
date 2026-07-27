@@ -131,14 +131,30 @@ public class ProtocolExportCommand : Command
 
     private static bool ValidateTargetDirectories(ProtocolExportConfig config, bool isSilent)
     {
-        if (!ValidateSingleTarget(config.ProtocolDir, config.ServerDir, config.ClientDir, config.ExportType, isSilent, "主协议"))
+        if (!ValidateSingleTarget(
+                config.ProtocolDir,
+                config.ServerDir,
+                config.ClientDir,
+                config.TypeScriptClientDir,
+                config.ExportType,
+                config.ExportTypeScriptClient,
+                isSilent,
+                "主协议"))
         {
             return false;
         }
 
         foreach (var packageExport in config.PackageExports)
         {
-            if (!ValidateSingleTarget(packageExport.ProtocolDir, packageExport.ServerDir, packageExport.ClientDir, packageExport.ExportType, isSilent, "子包协议"))
+            if (!ValidateSingleTarget(
+                    packageExport.ProtocolDir,
+                    packageExport.ServerDir,
+                    packageExport.ClientDir,
+                    packageExport.TypeScriptClientDir,
+                    packageExport.ExportType,
+                    packageExport.ExportTypeScriptClient,
+                    isSilent,
+                    "子包协议"))
             {
                 return false;
             }
@@ -147,7 +163,15 @@ public class ProtocolExportCommand : Command
         return true;
     }
 
-    private static bool ValidateSingleTarget(string protocolDir, string serverDir, string clientDir, ProtocolExportType exportType, bool isSilent, string label)
+    private static bool ValidateSingleTarget(
+        string protocolDir,
+        string serverDir,
+        string clientDir,
+        string typeScriptClientDir,
+        ProtocolExportType exportType,
+        bool exportTypeScriptClient,
+        bool isSilent,
+        string label)
     {
         if (!Directory.Exists(protocolDir))
         {
@@ -193,9 +217,28 @@ public class ProtocolExportCommand : Command
             }
         }
 
-        if (exportType == 0)
+        if (exportTypeScriptClient && string.IsNullOrWhiteSpace(typeScriptClientDir))
         {
-            AnsiConsole.MarkupLine($"[red]错误:[/] {label}至少要启用一个导出目标。");
+            AnsiConsole.MarkupLine($"[red]错误:[/] {label}启用了 TypeScript 导出，但未配置 TypeScript 目录。");
+            return false;
+        }
+
+        if (exportTypeScriptClient && !Directory.Exists(typeScriptClientDir))
+        {
+            if (isSilent)
+            {
+                Directory.CreateDirectory(typeScriptClientDir);
+            }
+            else
+            {
+                AnsiConsole.MarkupLine($"[red]错误:[/] 导出到 TypeScript 的目录 '{typeScriptClientDir}' 不已存在。");
+                return false;
+            }
+        }
+
+        if (exportType == ProtocolExportType.None && !exportTypeScriptClient)
+        {
+            AnsiConsole.MarkupLine($"[red]错误:[/] {label}至少要启用一个导出目标（Server/Client/TypeScript）。");
             return false;
         }
 

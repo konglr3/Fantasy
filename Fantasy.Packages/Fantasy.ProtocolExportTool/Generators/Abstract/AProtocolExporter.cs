@@ -38,6 +38,8 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
     protected readonly string ProtocolDirectory = NormalizePath(protocolDirectory);
     protected readonly string ClientDirectory = NormalizeOptionalPath(clientDirectory);
     protected readonly string ServerDirectory = NormalizeOptionalPath(serverDirectory);
+    protected virtual string GeneratedFileExtension => "cs";
+    protected IReadOnlyDictionary<string, MessageDefinition> OuterMessages => _outerMessages;
     
     private static string NormalizePath(string path)
     {
@@ -85,7 +87,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ServerDirectory);
             }
             
-            var filePath = Path.Combine(ServerDirectory, "RouteType.cs");
+            var filePath = Path.Combine(ServerDirectory, $"RouteType.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated RouteType.cs at {filePath}[/]");
         }
@@ -97,7 +99,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ClientDirectory);
             }
             
-            var filePath = Path.Combine(ClientDirectory, "RouteType.cs");
+            var filePath = Path.Combine(ClientDirectory, $"RouteType.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated RouteType.cs at {filePath}[/]");
         }
@@ -121,7 +123,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ServerDirectory);
             }
             
-            var filePath = Path.Combine(ServerDirectory, "RoamingType.cs");
+            var filePath = Path.Combine(ServerDirectory, $"RoamingType.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated RoamingType.cs at {filePath}[/]");
         }
@@ -133,7 +135,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ClientDirectory);
             }
             
-            var filePath = Path.Combine(ClientDirectory, "RoamingType.cs");
+            var filePath = Path.Combine(ClientDirectory, $"RoamingType.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated RoamingType.cs at {filePath}[/]");
         }
@@ -157,7 +159,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ServerDirectory);
             }
             
-            var filePath = Path.Combine(ServerDirectory, "OuterOpcode.cs");
+            var filePath = Path.Combine(ServerDirectory, $"OuterOpcode.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated OuterOpcode.cs at {filePath}[/]");
         }
@@ -169,7 +171,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ClientDirectory);
             }
             
-            var filePath = Path.Combine(ClientDirectory, "OuterOpcode.cs");
+            var filePath = Path.Combine(ClientDirectory, $"OuterOpcode.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated OuterOpcode.cs at {filePath}[/]");
         }
@@ -193,7 +195,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ServerDirectory);
             }
             
-            var filePath = Path.Combine(ServerDirectory, "InnerOpcode.cs");
+            var filePath = Path.Combine(ServerDirectory, $"InnerOpcode.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated InnerOpcode.cs at {filePath}[/]");
         }
@@ -217,7 +219,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ServerDirectory);
             }
             
-            var filePath = Path.Combine(ServerDirectory, "OuterMessage.cs");
+            var filePath = Path.Combine(ServerDirectory, $"OuterMessage.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated OuterMessage.cs at {filePath}[/]");
         }
@@ -229,7 +231,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ClientDirectory);
             }
             
-            var filePath = Path.Combine(ClientDirectory, "OuterMessage.cs");
+            var filePath = Path.Combine(ClientDirectory, $"OuterMessage.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated OuterMessage.cs at {filePath}[/]");
         }
@@ -253,7 +255,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ServerDirectory);
             }
 
-            var filePath = Path.Combine(ServerDirectory, "InnerMessage.cs");
+            var filePath = Path.Combine(ServerDirectory, $"InnerMessage.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated InnerMessage.cs at {filePath}[/]");
         }
@@ -277,7 +279,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ClientDirectory);
             }
 
-            var filePath = Path.Combine(ClientDirectory, "NetworkProtocolHelper.cs");
+            var filePath = Path.Combine(ClientDirectory, $"NetworkProtocolHelper.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated NetworkProtocolHelper.cs at {filePath}[/]");
         }
@@ -301,7 +303,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ServerDirectory);
             }
 
-            var filePath = Path.Combine(ServerDirectory, "OuterEnum.cs");
+            var filePath = Path.Combine(ServerDirectory, $"OuterEnum.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated OuterEnum.cs at {filePath}[/]");
         }
@@ -313,7 +315,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ClientDirectory);
             }
 
-            var filePath = Path.Combine(ClientDirectory, "OuterEnum.cs");
+            var filePath = Path.Combine(ClientDirectory, $"OuterEnum.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated OuterEnum.cs at {filePath}[/]");
         }
@@ -337,7 +339,7 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ServerDirectory);
             }
 
-            var filePath = Path.Combine(ServerDirectory, "InnerEnum.cs");
+            var filePath = Path.Combine(ServerDirectory, $"InnerEnum.{GeneratedFileExtension}");
             await File.WriteAllTextAsync(filePath, template);
             // AnsiConsole.MarkupLine($"[green]Generated InnerEnum.cs at {filePath}[/]");
         }

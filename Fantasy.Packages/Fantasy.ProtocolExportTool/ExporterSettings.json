@@ -1,36 +1,25 @@
 {
     "Export": {
         "NetworkProtocolDirectory": {
-            "Value": "/Users/fantasy/Code/Git/Fantasy/Examples/Config/NetworkProtocol",
+            "Value": "../../examples/Config/NetworkProtocol",
             "Comment": "ProtoBuf文件所在的文件夹位置"
         },
         "NetworkProtocolServerDirectory": {
-            "Value": "/Users/fantasy/Code/Git/Fantasy/Examples/Server/APP/Entity/Generate/NetworkProtocol",
+            "Value": "C:/Users/BenFei/Desktop/Output/Server",
             "Comment": "ProtoBuf生成到服务端的文件夹位置"
         },
         "NetworkProtocolClientDirectory": {
-            "Value": "/Users/fantasy/Code/Git/Fantasy/Examples/Client/Unity/Assets/Scripts/Hotfix/Generate/NetworkProtocol",
+            "Value": "C:/Users/BenFei/Desktop/Output/Client",
             "Comment": "ProtoBuf生成到客户端的文件夹位置"
         },
+        "NetworkProtocolTypeScriptClientDirectory": {
+            "Value": "C:/Users/BenFei/Desktop/Output/TypeScript",
+            "Comment": "TypeScript 协议输出目录；非空时额外生成 .ts（含 ProtoOuterDispatcherInit.ts）"
+        },
         "SharedOpCodeCacheFile": {
-            "Value": "/Users/fantasy/Code/Git/Fantasy/Examples/Config/NetworkProtocol/OpCode.Cache",
+            "Value": "C:/Users/BenFei/Desktop/Output/OpCode.Cache",
             "Comment": "主协议与子包共享的OpCode缓存文件"
         },
-        "PackageExports": [
-            {
-                "NetworkProtocolDirectory": {
-                    "Value": "/Users/fantasy/Code/Git/Fantasy/Fantasy.Packages/Fantasy.Room/Protocol",
-                    "Comment": "子包ProtoBuf文件所在的文件夹位置"
-                },
-                "NetworkProtocolServerDirectory": {
-                    "Value": "/Users/fantasy/Code/Git/Fantasy/Fantasy.Packages/Fantasy.Room/Runtime/Protocol",
-                    "Comment": "子包ProtoBuf生成到服务端的文件夹位置"
-                },
-                "NetworkProtocolClientDirectory": {
-                    "Value": "/Users/fantasy/Code/Git/Fantasy/Fantasy.Packages/Fantasy.Room.Unity/Runtime/Protocol",
-                    "Comment": "子包ProtoBuf生成到客户端的文件夹位置"
-                }
-            }
-        ]
+        "PackageExports": []
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Fantasy.ProtocolExportTool.Abstract;
 using Fantasy.ProtocolExportTool.Generators.Parsers;
 using Fantasy.ProtocolExportTool.Models;
 using Fantasy.ProtocolExportTool.Services;
@@ -23,14 +24,7 @@ public class ProtocolGenerator
             : Path.GetFullPath(config.OpCodeCacheFile);
 
         using var opCodeCache = OpCodeCacheSession.Open(cachePath);
-        var jobs = targets.ConvertAll(target => new ExportJob(
-            target,
-            new CSharpExporter(
-                target.ProtocolDir,
-                target.ClientDir,
-                target.ServerDir,
-                opCodeCache,
-                target.ExportType)));
+        var jobs = CreateJobs(targets, opCodeCache);
 
         foreach (var job in jobs)
         {
@@ -53,6 +47,10 @@ public class ProtocolGenerator
         {
             ct.ThrowIfCancellationRequested();
             await GenerateTargetAsync(job, ct);
+            if (job.Exporter is TypeScriptExporter tsExporter)
+            {
+                await tsExporter.WriteProtoOuterDispatcherInitAsync();
+            }
         }
 
         ct.ThrowIfCancellationRequested();
@@ -68,12 +66,46 @@ public class ProtocolGenerator
                 ProtocolDir = config.ProtocolDir,
                 ServerDir = config.ServerDir,
                 ClientDir = config.ClientDir,
+                TypeScriptClientDir = config.TypeScriptClientDir,
+                ExportTypeScriptClient = config.ExportTypeScriptClient,
                 ExportType = config.ExportType
             }
         };
 
         targets.AddRange(config.PackageExports);
         return targets;
+    }
+
+    private static List<ExportJob> CreateJobs(IReadOnlyList<ProtocolExportTarget> targets, OpCodeCacheSession opCodeCache)
+    {
+        var jobs = new List<ExportJob>();
+
+        foreach (var target in targets)
+        {
+            if (target.ExportType != ProtocolExportType.None)
+            {
+                jobs.Add(new ExportJob(
+                    target,
+                    new CSharpExporter(
+                        target.ProtocolDir,
+                        target.ClientDir,
+                        target.ServerDir,
+                        opCodeCache,
+                        target.ExportType)));
+            }
+
+            if (target.ExportTypeScriptClient && !string.IsNullOrWhiteSpace(target.TypeScriptClientDir))
+            {
+                jobs.Add(new ExportJob(
+                    target,
+                    new TypeScriptExporter(
+                        target.ProtocolDir,
+                        target.TypeScriptClientDir,
+                        opCodeCache)));
+            }
+        }
+
+        return jobs;
     }
 
     private static void ValidateUniqueMessageNames(IReadOnlyList<ProtocolExportTarget> targets)
@@ -230,5 +262,5 @@ public class ProtocolGenerator
             });
     }
 
-    private sealed record ExportJob(ProtocolExportTarget Target, CSharpExporter Exporter);
+    private sealed record ExportJob(ProtocolExportTarget Target, AProtocolExporter Exporter);
 }

@@ -93,6 +93,11 @@ public static class ExporterSettingsService
                     Value = string.Empty,
                     Comment = "ProtoBuf生成到客户端的文件夹位置"
                 },
+                NetworkProtocolTypeScriptClientDirectory = new SettingItem
+                {
+                    Value = string.Empty,
+                    Comment = "TypeScript 协议输出目录；非空时额外生成 .ts（含 ProtoOuterDispatcherInit.ts）"
+                },
                 SharedOpCodeCacheFile = new SettingItem
                 {
                     Value = "OpCode.Cache",
@@ -117,19 +122,36 @@ public static class ExporterSettingsService
         var settingsDirectory = Path.GetDirectoryName(settingsPath) ?? Directory.GetCurrentDirectory();
         var pathBase = DeterminePathBase(settings.Export.NetworkProtocolDirectory.Value, settingsDirectory);
 
+        var mainExportType = GetEffectiveExportType(
+            settings.Export.ExportType,
+            settings.Export.NetworkProtocolServerDirectory.Value,
+            settings.Export.NetworkProtocolClientDirectory.Value);
+
         return new ProtocolExportConfig
         {
             ProtocolDir = ResolvePath(settings.Export.NetworkProtocolDirectory.Value, pathBase),
             ServerDir = ResolveOptionalPath(settings.Export.NetworkProtocolServerDirectory.Value, pathBase),
             ClientDir = ResolveOptionalPath(settings.Export.NetworkProtocolClientDirectory.Value, pathBase),
+            TypeScriptClientDir = ResolveOptionalPath(settings.Export.NetworkProtocolTypeScriptClientDirectory.Value, pathBase),
+            ExportTypeScriptClient = !string.IsNullOrWhiteSpace(settings.Export.NetworkProtocolTypeScriptClientDirectory.Value),
             OpCodeCacheFile = ResolveOptionalPath(settings.Export.SharedOpCodeCacheFile.Value, pathBase),
-            ExportType = settings.Export.ExportType,
-            PackageExports = settings.Export.PackageExports.ConvertAll(package => new ProtocolExportTarget
+            ExportType = mainExportType,
+            PackageExports = settings.Export.PackageExports.ConvertAll(package =>
             {
+                var packageExportType = GetEffectiveExportType(
+                    package.ExportType,
+                    package.NetworkProtocolServerDirectory.Value,
+                    package.NetworkProtocolClientDirectory.Value);
+
+                return new ProtocolExportTarget
+                {
                 ProtocolDir = ResolvePath(package.NetworkProtocolDirectory.Value, pathBase),
                 ServerDir = ResolveOptionalPath(package.NetworkProtocolServerDirectory.Value, pathBase),
                 ClientDir = ResolveOptionalPath(package.NetworkProtocolClientDirectory.Value, pathBase),
-                ExportType = package.ExportType
+                TypeScriptClientDir = ResolveOptionalPath(package.NetworkProtocolTypeScriptClientDirectory.Value, pathBase),
+                ExportTypeScriptClient = !string.IsNullOrWhiteSpace(package.NetworkProtocolTypeScriptClientDirectory.Value),
+                ExportType = packageExportType
+                };
             })
         };
     }
@@ -170,6 +192,25 @@ public static class ExporterSettingsService
         return Directory.Exists(legacyProtocolPath) ? workingDirectory : settingsDirectory;
     }
 
+    private static ProtocolExportType GetEffectiveExportType(
+        ProtocolExportType configuredExportType,
+        string serverDirectory,
+        string clientDirectory)
+    {
+        var exportType = configuredExportType;
+        if (string.IsNullOrWhiteSpace(serverDirectory))
+        {
+            exportType &= ~ProtocolExportType.Server;
+        }
+
+        if (string.IsNullOrWhiteSpace(clientDirectory))
+        {
+            exportType &= ~ProtocolExportType.Client;
+        }
+
+        return exportType;
+    }
+
     private static ExporterSettings DeserializeAndNormalize(string json, string filePath)
     {
         var settings = JsonSerializer.Deserialize<ExporterSettings>(json, ReadOptions)
@@ -184,6 +225,7 @@ public static class ExporterSettingsService
         settings.Export.NetworkProtocolDirectory ??= new SettingItem();
         settings.Export.NetworkProtocolServerDirectory ??= new SettingItem();
         settings.Export.NetworkProtocolClientDirectory ??= new SettingItem();
+        settings.Export.NetworkProtocolTypeScriptClientDirectory ??= new SettingItem();
         settings.Export.SharedOpCodeCacheFile ??= new SettingItem();
         settings.Export.PackageExports ??= [];
 
@@ -192,6 +234,7 @@ public static class ExporterSettingsService
             package.NetworkProtocolDirectory ??= new SettingItem();
             package.NetworkProtocolServerDirectory ??= new SettingItem();
             package.NetworkProtocolClientDirectory ??= new SettingItem();
+            package.NetworkProtocolTypeScriptClientDirectory ??= new SettingItem();
         }
     }
 
