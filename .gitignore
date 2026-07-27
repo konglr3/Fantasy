@@ -1,4 +1,4 @@
-# Specify filepatterns you want git to ignore.
+﻿# Specify filepatterns you want git to ignore.
 obj/
 Bin/
 bin/
@@ -9,9 +9,9 @@ temp/
 DocFx/
 global.json
 
-# 项目素材
+# 椤圭洰绱犳潗
 ResLibrary/
-# Unity项目文件
+# Unity椤圭洰鏂囦欢
 examples/**/Unity/*.sln
 examples/**/Unity/*.csproj
 examples/**/Unity/.vsconfig
@@ -20,7 +20,7 @@ examples/**/Unity/.vsconfig
 HybridCLRData/
 AssetBundles/
 UserSettings/
-# 忽略Packages.Unity包下的.meta
+# 蹇界暐Packages.Unity鍖呬笅鐨?meta
 Packages.Unity/**/*.meta
 
 
@@ -30,10 +30,14 @@ Packages.Unity/**/*.meta
 .vscode
 *.DS_Store
 **/editor-state.json
-# 不排除示例项目的.vscode
+# 涓嶆帓闄ょず渚嬮」鐩殑.vscode
 !examples/**/.vscode
 !Tools/**/.vscode
 examples/**/Unity/.vscode
 CLAUDE.md
 .claude
 Fantasy.Packages/Fantasy.Cil/Resources
+
+# Cocos package dependencies
+Fantasy.Packages/Fantasy.Cocos/node_modules/
+
