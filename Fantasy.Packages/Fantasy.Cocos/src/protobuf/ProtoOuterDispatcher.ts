@@ -45,6 +45,24 @@ export class ProtoOuterDispatcher {
     return t.encode(msg).finish();
   }
 
+  /** 按类型名解码 body（RPC 响应 / 推送） */
+  decodeBody(fullTypeName: string, body: Uint8Array): Message {
+    const t = this.root.lookupType(fullTypeName);
+    if (!t) {
+      throw new Error(`[ProtoOuterDispatcher] lookupType failed: ${fullTypeName}`);
+    }
+    return t.decode(body);
+  }
+
+  /** 按已注册 opcode 解码；未注册返回 null */
+  decodeByOpcode(protocolCode: number, body: Uint8Array): { typeName: string; message: Message } | null {
+    const t = this.types.get(protocolCode >>> 0);
+    if (!t) {
+      return null;
+    }
+    return { typeName: t.fullName, message: t.decode(body) };
+  }
+
   encodeMessage(message: Message): Uint8Array {
     const t = message.$type;
     if (!t) {

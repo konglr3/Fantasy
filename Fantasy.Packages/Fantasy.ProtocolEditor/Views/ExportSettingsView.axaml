@@ -120,6 +120,30 @@
 
             <Separator Background="#3E3E42"/>
 
+            <!-- TypeScript 配置 -->
+            <StackPanel Spacing="5">
+                <CheckBox IsChecked="{Binding ExportToTypeScript}"
+                          Content="导出 TypeScript 协议"
+                          FontWeight="SemiBold"
+                          Foreground="#CCCCCC"/>
+
+                <StackPanel Spacing="5" IsEnabled="{Binding ExportToTypeScript}">
+                    <TextBlock Text="TypeScript 输出目录"
+                               Foreground="#CCCCCC"/>
+                    <TextBox Text="{Binding TypeScriptOutputDirectory}"
+                             Watermark="例如: ../Fantasy.Cocos/src/proto"
+                             FontFamily="Consolas,Menlo,Monaco,monospace"
+                             Background="#252526"
+                             Foreground="#CCCCCC"
+                             BorderBrush="#3E3E42"/>
+                    <TextBlock Text="💡 默认导出到 Fantasy.Cocos/src/proto，供 Cocos 客户端直接引用"
+                               FontSize="12"
+                               Foreground="#858585"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Separator Background="#3E3E42"/>
+
             <!-- 子包协议配置 -->
             <StackPanel Spacing="10">
                 <Grid ColumnDefinitions="*,Auto">
@@ -186,6 +210,9 @@
                                         <CheckBox IsChecked="{Binding ExportToClient}"
                                                   Content="导出到客户端"
                                                   Foreground="#CCCCCC"/>
+                                        <CheckBox IsChecked="{Binding ExportToTypeScript}"
+                                                  Content="导出 TypeScript"
+                                                  Foreground="#CCCCCC"/>
                                     </StackPanel>
 
                                     <StackPanel Spacing="5" IsEnabled="{Binding ExportToServer}">
@@ -204,6 +231,17 @@
                                                    Foreground="#CCCCCC"/>
                                         <TextBox Text="{Binding ClientOutputDirectory}"
                                                  Watermark="例如: ../Fantasy.Room.Unity/Runtime/Protocol"
+                                                 FontFamily="Consolas,Menlo,Monaco,monospace"
+                                                 Background="#1E1E1E"
+                                                 Foreground="#CCCCCC"
+                                                 BorderBrush="#3E3E42"/>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="5" IsEnabled="{Binding ExportToTypeScript}">
+                                        <TextBlock Text="子包 TypeScript 输出目录"
+                                                   Foreground="#CCCCCC"/>
+                                        <TextBox Text="{Binding TypeScriptOutputDirectory}"
+                                                 Watermark="例如: ../Fantasy.Cocos/src/proto"
                                                  FontFamily="Consolas,Menlo,Monaco,monospace"
                                                  Background="#1E1E1E"
                                                  Foreground="#CCCCCC"
@@ -244,13 +282,13 @@
                         <TextBlock Text="1. 协议目录使用当前工作区路径，包含 Inner 和 Outer 子文件夹"
                                    TextWrapping="Wrap"
                                    Foreground="#858585"/>
-                        <TextBlock Text="2. 配置主协议服务器和客户端的输出目录"
+                        <TextBlock Text="2. 配置主协议服务器、客户端与 TypeScript 输出目录（TS 默认 Fantasy.Cocos/src/proto）"
                                    TextWrapping="Wrap"
                                    Foreground="#858585"/>
                         <TextBlock Text="3. 可在 PackageExports 区域新增、删除并配置子包协议"
                                    TextWrapping="Wrap"
                                    Foreground="#858585"/>
-                        <TextBlock Text="4. 主协议和每个子包都至少选择一个导出目标"
+                        <TextBlock Text="4. 主协议和每个子包都至少选择一个导出目标（Server/Client/TypeScript）"
                                    TextWrapping="Wrap"
                                    Foreground="#858585"/>
                         <TextBlock Text="5. 点击保存后会写入协议工作区根目录的 ExporterSettings.json"

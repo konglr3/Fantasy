@@ -47,7 +47,9 @@ public class ProtocolExportService
                 "主协议",
                 config.ServerDir,
                 config.ClientDir,
+                config.TypeScriptClientDir,
                 config.ExportType,
+                config.ExportTypeScriptClient,
                 progressCallback);
 
             for (var i = 0; i < config.PackageExports.Count; i++)
@@ -57,7 +59,9 @@ public class ProtocolExportService
                     $"子包 {i + 1}",
                     package.ServerDir,
                     package.ClientDir,
+                    package.TypeScriptClientDir,
                     package.ExportType,
+                    package.ExportTypeScriptClient,
                     progressCallback);
             }
 
@@ -73,6 +77,11 @@ public class ProtocolExportService
             if (config.ExportType.HasFlag(ProtocolExportType.Client))
             {
                 progressCallback?.Invoke($"客户端目录: {config.ClientDir}");
+            }
+
+            if (config.ExportTypeScriptClient)
+            {
+                progressCallback?.Invoke($"TypeScript 目录: {config.TypeScriptClientDir}");
             }
 
             // 执行协议生成
@@ -153,7 +162,9 @@ public class ProtocolExportService
             config.ProtocolDir,
             config.ServerDir,
             config.ClientDir,
-            config.ExportType);
+            config.TypeScriptClientDir,
+            config.ExportType,
+            config.ExportTypeScriptClient);
         if (!mainResult.IsValid)
         {
             return mainResult;
@@ -167,7 +178,9 @@ public class ProtocolExportService
                 package.ProtocolDir,
                 package.ServerDir,
                 package.ClientDir,
-                package.ExportType);
+                package.TypeScriptClientDir,
+                package.ExportType,
+                package.ExportTypeScriptClient);
             if (!packageResult.IsValid)
             {
                 return packageResult;
@@ -182,11 +195,13 @@ public class ProtocolExportService
         string protocolDirectory,
         string serverDirectory,
         string clientDirectory,
-        ProtocolExportType exportType)
+        string typeScriptDirectory,
+        ProtocolExportType exportType,
+        bool exportTypeScriptClient)
     {
-        if ((exportType & ProtocolExportType.All) == 0)
+        if ((exportType & ProtocolExportType.All) == 0 && !exportTypeScriptClient)
         {
-            return (false, $"{targetName}未启用任何导出目标");
+            return (false, $"{targetName}未启用任何导出目标（Server/Client/TypeScript）");
         }
 
         if (string.IsNullOrWhiteSpace(protocolDirectory))
@@ -209,6 +224,11 @@ public class ProtocolExportService
             return (false, $"{targetName}已启用客户端导出，但客户端输出目录为空");
         }
 
+        if (exportTypeScriptClient && string.IsNullOrWhiteSpace(typeScriptDirectory))
+        {
+            return (false, $"{targetName}已启用 TypeScript 导出，但 TypeScript 输出目录为空");
+        }
+
         return (true, null);
     }
 
@@ -216,7 +236,9 @@ public class ProtocolExportService
         string targetName,
         string serverDirectory,
         string clientDirectory,
+        string typeScriptDirectory,
         ProtocolExportType exportType,
+        bool exportTypeScriptClient,
         Action<string>? progressCallback)
     {
         if (exportType.HasFlag(ProtocolExportType.Server) && !Directory.Exists(serverDirectory))
@@ -229,6 +251,12 @@ public class ProtocolExportService
         {
             progressCallback?.Invoke($"创建{targetName}客户端目录: {clientDirectory}");
             Directory.CreateDirectory(clientDirectory);
+        }
+
+        if (exportTypeScriptClient && !Directory.Exists(typeScriptDirectory))
+        {
+            progressCallback?.Invoke($"创建{targetName}TypeScript 目录: {typeScriptDirectory}");
+            Directory.CreateDirectory(typeScriptDirectory);
         }
     }
 }

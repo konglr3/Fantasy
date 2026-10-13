@@ -2,8 +2,7 @@
  * Fantasy.Cocos 最小连接 + 收发 Demo
  *
  * 适用场景：Cocos Creator 3.x 脚本，或可提供 WebSocket / protobufjs 的 TS 环境。
- * 协议文件请先执行：npm run sync:protocol
- * 然后从 examples/protocol 引用 OuterOpcode / ProtoOuterDispatcherInit。
+ * 协议文件请用 ProtocolExportTool 导出到 src/proto（或使用 examples/protocol 示例副本）。
  *
  * 使用前请确认：
  * 1. 服务端 WebSocket 已监听（默认 127.0.0.1:20000）

@@ -8,7 +8,13 @@ namespace Fantasy.ProtocolExportTool.Interactive;
 
 public sealed class ProtocolExportWizard
 {
-    public async Task<ProtocolExportConfig> RunAsync(string? protocolDir, string? serverDir, string? clientDir, string? exportType, CancellationToken ct = default)
+    public async Task<ProtocolExportConfig> RunAsync(
+        string? protocolDir,
+        string? serverDir,
+        string? clientDir,
+        string? typeScriptDir,
+        string? exportType,
+        CancellationToken ct = default)
     {
         while (true)
         {
@@ -17,14 +23,19 @@ public sealed class ProtocolExportWizard
             var config = new ProtocolExportConfig()
             {
                 ProtocolDir = string.IsNullOrEmpty(protocolDir) ? AnsiConsole.Ask<string>("[cyan]协议目录:[/]").Trim() : protocolDir,
-                ServerDir = string.IsNullOrEmpty(serverDir) ? AnsiConsole.Ask<string>("[cyan]服务器代码目录:[/]").Trim()  : serverDir,
-                ClientDir = string.IsNullOrEmpty(clientDir) ? AnsiConsole.Ask<string>("[cyan]客户端代码目录:[/]").Trim()  : clientDir,
+                ServerDir = string.IsNullOrEmpty(serverDir) ? AnsiConsole.Ask<string>("[cyan]服务器代码目录:[/]").Trim() : serverDir,
+                ClientDir = string.IsNullOrEmpty(clientDir) ? AnsiConsole.Ask<string>("[cyan]客户端代码目录:[/]").Trim() : clientDir,
+                TypeScriptClientDir = string.IsNullOrEmpty(typeScriptDir)
+                    ? AnsiConsole.Ask("[cyan]TypeScript 目录[/]（可留空跳过，默认 [grey]../Fantasy.Cocos/src/proto[/]）:", "../Fantasy.Cocos/src/proto").Trim()
+                    : typeScriptDir,
                 ExportType = isHaveExportType
                     ? protocolExportType
                     : AnsiConsole.Prompt(new SelectionPrompt<ProtocolExportType>().Title("[cyan]导出目标:[/]")
                         .AddChoices(ProtocolExportType.Server, ProtocolExportType.Client, ProtocolExportType.All)
                         .UseConverter(GetProtocolExportTypeText))
             };
+
+            config.ExportTypeScriptClient = !string.IsNullOrWhiteSpace(config.TypeScriptClientDir);
 
             if (await AnsiConsole.ConfirmAsync("\n[yellow]是否确定执行？[/]", true, ct))
             {

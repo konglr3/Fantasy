@@ -1,5 +1,5 @@
-# 协议 TypeScript（自动同步目录）
+# 协议 TypeScript（示例副本）
 
-本目录由 `npm run sync:protocol` 从 `Output/TypeScript` 覆盖同步，请勿手改。
+正式导出目录为 `src/proto`（ProtocolExportTool 默认路径）。
 
-默认源：`C:/Users/BenFei/Desktop/Output/TypeScript`
+本目录保留一份示例协议，供 `examples/minimal-ws-demo` 直接引用。

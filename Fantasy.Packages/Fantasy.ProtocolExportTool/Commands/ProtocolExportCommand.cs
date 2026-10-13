@@ -29,6 +29,11 @@ public class ProtocolExportCommand : Command
             Description = "导出到客户端的位置"
         };
 
+        var typeScriptOption = new Option<string>("-ts", "--typescript")
+        {
+            Description = "导出到 TypeScript 客户端的位置（默认 ../Fantasy.Cocos/src/proto）"
+        };
+
         var exportTypeOption = new Option<string>("-t", "--type")
         {
             Description = "导出的方式"
@@ -47,6 +52,7 @@ public class ProtocolExportCommand : Command
         Add(protocolDirectoryOption);
         Add(serverOption);
         Add(clientOption);
+        Add(typeScriptOption);
         Add(exportTypeOption);
         Add(silentOption);
         Add(configOption);
@@ -56,6 +62,7 @@ public class ProtocolExportCommand : Command
             var protocolDir = context.GetValue(protocolDirectoryOption);
             var serverDir = context.GetValue(serverOption);
             var clientDir = context.GetValue(clientOption);
+            var typeScriptDir = context.GetValue(typeScriptOption);
             var exportType = context.GetValue(exportTypeOption);
             var isSilent = context.GetValue(silentOption);
             var configPath = context.GetValue(configOption);
@@ -75,7 +82,7 @@ public class ProtocolExportCommand : Command
             else
             {
                 // 交互模式：使用向导
-                config = await new ProtocolExportWizard().RunAsync(protocolDir, serverDir, clientDir, exportType);
+                config = await new ProtocolExportWizard().RunAsync(protocolDir, serverDir, clientDir, typeScriptDir, exportType);
             }
 
             if (!ValidateTargetDirectories(config, isSilent))

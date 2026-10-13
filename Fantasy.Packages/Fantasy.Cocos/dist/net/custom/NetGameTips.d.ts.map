@@ -1,0 +1,1 @@
+{"version":3,"file":"NetGameTips.d.ts","sourceRoot":"","sources":["../../../src/net/custom/NetGameTips.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,YAAY,EAAE,MAAM,iBAAiB,CAAC;AAE/C,4BAA4B;AAC5B,qBAAa,WAAY,YAAW,YAAY;IAC9C,WAAW,CAAC,MAAM,EAAE,OAAO,GAAG,IAAI;IAQlC,aAAa,IAAI,IAAI;IAIrB,WAAW,CAAC,MAAM,EAAE,OAAO,GAAG,IAAI;IAQlC,cAAc,CAAC,MAAM,EAAE,OAAO,GAAG,IAAI;CAGtC"}

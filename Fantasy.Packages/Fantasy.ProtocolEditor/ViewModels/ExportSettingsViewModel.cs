@@ -34,6 +34,12 @@ public partial class ExportSettingsViewModel : ViewModelBase
     private string _clientOutputDirectory = string.Empty;
 
     /// <summary>
+    /// TypeScript 客户端输出目录
+    /// </summary>
+    [ObservableProperty]
+    private string _typeScriptOutputDirectory = string.Empty;
+
+    /// <summary>
     /// 是否导出到服务器
     /// </summary>
     [ObservableProperty]
@@ -44,6 +50,12 @@ public partial class ExportSettingsViewModel : ViewModelBase
     /// </summary>
     [ObservableProperty]
     private bool _exportToClient = true;
+
+    /// <summary>
+    /// 是否导出 TypeScript
+    /// </summary>
+    [ObservableProperty]
+    private bool _exportToTypeScript = true;
 
     /// <summary>
     /// 子包协议导出配置。
@@ -87,8 +99,13 @@ public partial class ExportSettingsViewModel : ViewModelBase
             WorkspacePath = config.ProtocolDir;
             ServerOutputDirectory = settings.Export.NetworkProtocolServerDirectory.Value;
             ClientOutputDirectory = settings.Export.NetworkProtocolClientDirectory.Value;
+            var typeScriptDirectory = settings.Export.NetworkProtocolTypeScriptClientDirectory.Value;
+            TypeScriptOutputDirectory = string.IsNullOrWhiteSpace(typeScriptDirectory)
+                ? "../Fantasy.Cocos/src/proto"
+                : typeScriptDirectory;
             ExportToServer = settings.Export.ExportType.HasFlag(ProtocolExportType.Server);
             ExportToClient = settings.Export.ExportType.HasFlag(ProtocolExportType.Client);
+            ExportToTypeScript = !string.IsNullOrWhiteSpace(typeScriptDirectory);
 
             foreach (var package in PackageExports)
             {
@@ -128,6 +145,10 @@ public partial class ExportSettingsViewModel : ViewModelBase
             // 更新导出配置
             settings.Export.NetworkProtocolServerDirectory.Value = ServerOutputDirectory;
             settings.Export.NetworkProtocolClientDirectory.Value = ClientOutputDirectory;
+            settings.Export.NetworkProtocolTypeScriptClientDirectory.Value =
+                ExportToTypeScript ? TypeScriptOutputDirectory : string.Empty;
+            settings.Export.NetworkProtocolTypeScriptClientDirectory.Comment =
+                "TypeScript 协议输出目录；非空时额外生成 .ts（含 ProtoOuterDispatcherInit.ts）。默认同级 Fantasy.Cocos/src/proto";
             settings.Export.ExportType = GetExportType();
             settings.Export.PackageExports = PackageExports
                 .Select(package => package.ToSettings())
@@ -165,10 +186,10 @@ public partial class ExportSettingsViewModel : ViewModelBase
             return;
         }
 
-        if (!ExportToServer && !ExportToClient)
+        if (!ExportToServer && !ExportToClient && !ExportToTypeScript)
         {
             IsValid = false;
-            ValidationMessage = "❌ 请至少选择一个导出目标（服务器或客户端）";
+            ValidationMessage = "❌ 请至少选择一个导出目标（服务器、客户端或 TypeScript）";
             return;
         }
 
@@ -183,6 +204,13 @@ public partial class ExportSettingsViewModel : ViewModelBase
         {
             IsValid = false;
             ValidationMessage = "❌ 已启用客户端导出，但未配置客户端输出目录";
+            return;
+        }
+
+        if (ExportToTypeScript && string.IsNullOrWhiteSpace(TypeScriptOutputDirectory))
+        {
+            IsValid = false;
+            ValidationMessage = "❌ 已启用 TypeScript 导出，但未配置 TypeScript 输出目录";
             return;
         }
 
@@ -206,7 +234,7 @@ public partial class ExportSettingsViewModel : ViewModelBase
                 return;
             }
 
-            if (!package.ExportToServer && !package.ExportToClient)
+            if (!package.ExportToServer && !package.ExportToClient && !package.ExportToTypeScript)
             {
                 IsValid = false;
                 ValidationMessage = $"❌ {packageName}请至少选择一个导出目标";
@@ -226,10 +254,17 @@ public partial class ExportSettingsViewModel : ViewModelBase
                 ValidationMessage = $"❌ {packageName}已启用客户端导出，但未配置客户端输出目录";
                 return;
             }
+
+            if (package.ExportToTypeScript && string.IsNullOrWhiteSpace(package.TypeScriptOutputDirectory))
+            {
+                IsValid = false;
+                ValidationMessage = $"❌ {packageName}已启用 TypeScript 导出，但未配置 TypeScript 输出目录";
+                return;
+            }
         }
 
         IsValid = true;
-        
+
         // 如果是相对路径，在提示中显示解析后的绝对路径，方便用户确认
         var serverHint = ExportToServer && !Path.IsPathRooted(ServerOutputDirectory)
             ? $"（解析为: {ResolveOutputPath(ServerOutputDirectory)}）"
@@ -237,10 +272,13 @@ public partial class ExportSettingsViewModel : ViewModelBase
         var clientHint = ExportToClient && !Path.IsPathRooted(ClientOutputDirectory)
             ? $"（解析为: {ResolveOutputPath(ClientOutputDirectory)}）"
             : string.Empty;
-        
-        if (!string.IsNullOrEmpty(serverHint) || !string.IsNullOrEmpty(clientHint))
+        var typeScriptHint = ExportToTypeScript && !Path.IsPathRooted(TypeScriptOutputDirectory)
+            ? $"（TS 解析为: {ResolveOutputPath(TypeScriptOutputDirectory)}）"
+            : string.Empty;
+
+        if (!string.IsNullOrEmpty(serverHint) || !string.IsNullOrEmpty(clientHint) || !string.IsNullOrEmpty(typeScriptHint))
         {
-            ValidationMessage = $"✅ 配置有效，可以执行导出 {serverHint}{clientHint}";
+            ValidationMessage = $"✅ 配置有效，可以执行导出 {serverHint}{clientHint}{typeScriptHint}";
         }
         else
         {
@@ -344,12 +382,22 @@ public partial class ExportSettingsViewModel : ViewModelBase
         MarkAsModified();
     }
 
+    partial void OnTypeScriptOutputDirectoryChanged(string value)
+    {
+        MarkAsModified();
+    }
+
     partial void OnExportToServerChanged(bool value)
     {
         MarkAsModified();
     }
 
     partial void OnExportToClientChanged(bool value)
+    {
+        MarkAsModified();
+    }
+
+    partial void OnExportToTypeScriptChanged(bool value)
     {
         MarkAsModified();
     }
@@ -365,6 +413,7 @@ public partial class PackageExportItemViewModel : ViewModelBase
     private string _protocolDirectoryComment = "子包ProtoBuf文件所在的文件夹位置";
     private string _serverDirectoryComment = "子包ProtoBuf生成到服务端的文件夹位置";
     private string _clientDirectoryComment = "子包ProtoBuf生成到客户端的文件夹位置";
+    private string _typeScriptDirectoryComment = "子包 TypeScript 协议输出目录";
 
     [ObservableProperty]
     private string _displayName = "子包协议";
@@ -379,10 +428,16 @@ public partial class PackageExportItemViewModel : ViewModelBase
     private string _clientOutputDirectory = string.Empty;
 
     [ObservableProperty]
+    private string _typeScriptOutputDirectory = string.Empty;
+
+    [ObservableProperty]
     private bool _exportToServer = true;
 
     [ObservableProperty]
     private bool _exportToClient = true;
+
+    [ObservableProperty]
+    private bool _exportToTypeScript;
 
     public PackageExportItemViewModel()
     {
@@ -393,11 +448,14 @@ public partial class PackageExportItemViewModel : ViewModelBase
         ProtocolDirectory = settings.NetworkProtocolDirectory.Value;
         ServerOutputDirectory = settings.NetworkProtocolServerDirectory.Value;
         ClientOutputDirectory = settings.NetworkProtocolClientDirectory.Value;
+        TypeScriptOutputDirectory = settings.NetworkProtocolTypeScriptClientDirectory.Value;
         ExportToServer = settings.ExportType.HasFlag(ProtocolExportType.Server);
         ExportToClient = settings.ExportType.HasFlag(ProtocolExportType.Client);
+        ExportToTypeScript = !string.IsNullOrWhiteSpace(settings.NetworkProtocolTypeScriptClientDirectory.Value);
         _protocolDirectoryComment = settings.NetworkProtocolDirectory.Comment;
         _serverDirectoryComment = settings.NetworkProtocolServerDirectory.Comment;
         _clientDirectoryComment = settings.NetworkProtocolClientDirectory.Comment;
+        _typeScriptDirectoryComment = settings.NetworkProtocolTypeScriptClientDirectory.Comment;
     }
 
     public PackageExportSettings ToSettings()
@@ -429,6 +487,11 @@ public partial class PackageExportItemViewModel : ViewModelBase
             {
                 Value = ClientOutputDirectory,
                 Comment = _clientDirectoryComment
+            },
+            NetworkProtocolTypeScriptClientDirectory = new SettingItem
+            {
+                Value = ExportToTypeScript ? TypeScriptOutputDirectory : string.Empty,
+                Comment = _typeScriptDirectoryComment
             },
             ExportType = exportType
         };

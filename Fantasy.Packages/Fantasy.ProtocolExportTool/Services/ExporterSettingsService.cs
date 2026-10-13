@@ -95,8 +95,8 @@ public static class ExporterSettingsService
                 },
                 NetworkProtocolTypeScriptClientDirectory = new SettingItem
                 {
-                    Value = string.Empty,
-                    Comment = "TypeScript 协议输出目录；非空时额外生成 .ts（含 ProtoOuterDispatcherInit.ts）"
+                    Value = "../Fantasy.Cocos/src/proto",
+                    Comment = "TypeScript 协议输出目录；非空时额外生成 .ts（含 ProtoOuterDispatcherInit.ts）。默认同级 Fantasy.Cocos/src/proto"
                 },
                 SharedOpCodeCacheFile = new SettingItem
                 {
