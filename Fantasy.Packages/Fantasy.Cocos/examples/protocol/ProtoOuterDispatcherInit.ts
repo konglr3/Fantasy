@@ -1,10 +1,14 @@
 /* eslint-disable */
 // 本文件由 Fantasy ProtocolExportTool 自动生成，请勿手动编辑。
 
-import type { ProtoOuterDispatcher } from 'fantasy-cocos/protobuf';
 import { OuterOpcode } from './OuterOpcode';
 
-export function registerOuterProtobufMessages(dispatcher: ProtoOuterDispatcher): void {
+/** 仅依赖 register 能力，兼容 fantasy-cocos 的 src / dist / 已发布类型 */
+export type OuterProtobufRegistrar = {
+  register(opcode: number, fullTypeName: string): unknown;
+};
+
+export function registerOuterProtobufMessages(dispatcher: OuterProtobufRegistrar): void {
   dispatcher.register(OuterOpcode.C2G_SendAddressableToMap, 'C2G_SendAddressableToMap');
   dispatcher.register(OuterOpcode.C2G_SendToSubSceneMessage, 'C2G_SendToSubSceneMessage');
   dispatcher.register(OuterOpcode.C2G_TestEmptyMessage, 'C2G_TestEmptyMessage');

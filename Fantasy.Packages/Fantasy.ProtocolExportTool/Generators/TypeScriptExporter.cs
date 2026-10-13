@@ -234,11 +234,16 @@ public sealed class TypeScriptExporter(
         }
 
         var body = string.Join("\n", lines);
+        // 使用结构化类型，避免 src/dist 两套 ProtoOuterDispatcher（含 private 字段）名义类型冲突
         return $$"""
-            {{FileHeader}}import type { ProtoOuterDispatcher } from 'fantasy-cocos/protobuf';
-            import { OuterOpcode } from './OuterOpcode';
+            {{FileHeader}}import { OuterOpcode } from './OuterOpcode';
 
-            export function registerOuterProtobufMessages(dispatcher: ProtoOuterDispatcher): void {
+            /** 仅依赖 register 能力，兼容 fantasy-cocos 的 src / dist / 已发布类型 */
+            export type OuterProtobufRegistrar = {
+              register(opcode: number, fullTypeName: string): unknown;
+            };
+
+            export function registerOuterProtobufMessages(dispatcher: OuterProtobufRegistrar): void {
             {{body}}
             }
 

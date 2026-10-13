@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2015",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "lib": ["ES2020", "DOM"],
+    "paths": {
+      "fantasy-cocos": ["../src/index.ts"],
+      "fantasy-cocos/protobuf": ["../src/protobuf/index.ts"]
+    }
+  },
+  "include": ["./**/*.ts", "../src/**/*.ts"],
+  "exclude": ["../src/proto/**", "../src/net/HttpManager.ts"]
+}
