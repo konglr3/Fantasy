@@ -45,7 +45,18 @@ export class WebSock implements ISocket {
 
   send(buffer: NetData): number {
     if (this._ws && this._ws.readyState == WebSocket.OPEN) {
-      this._ws.send(buffer);
+      if (buffer instanceof Uint8Array) {
+        // WebSocket.send 需要 ArrayBuffer；Uint8Array.buffer 在 TS 中为 ArrayBufferLike
+        const ab =
+          buffer.buffer instanceof ArrayBuffer
+            ? buffer.byteOffset === 0 && buffer.byteLength === buffer.buffer.byteLength
+              ? buffer.buffer
+              : buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
+            : (buffer.slice().buffer as ArrayBuffer);
+        this._ws.send(ab);
+      } else {
+        this._ws.send(buffer as string | ArrayBuffer | Blob);
+      }
       return 1;
     }
     return -1;

@@ -18,8 +18,18 @@ export declare class NetNodeGame extends NetNode {
      */
     req<T>(cmd: number, reqName: string, respName: string, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
     reqUnique<T>(cmd: number, reqName: string, respName: string, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
+    /**
+     * 发送不期待 Response 的 Outer 消息（对齐 Fantasy Session.Send，rpcId=0）
+     * @alias notify
+     */
+    send(cmd: number, reqName?: string, params?: Record<string, unknown>, address?: bigint): void;
     /** 发送不期待 Response 的消息 */
     notify(cmd: number, reqName?: string, params?: Record<string, unknown>, address?: bigint): void;
+    /**
+     * RPC 调用（对齐 Fantasy Session.Call）：发送 Request，等待同 rpcId 的 Response。
+     * @alias req
+     */
+    callRpc<T>(cmd: number, reqName: string, respName: string, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
     /**
      * 监听服务器推送
      */

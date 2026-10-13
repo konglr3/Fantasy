@@ -77,6 +77,11 @@ export class NetNode {
   protected _requests: IRequestProtocol[] = [];
   protected _listener: { [key: number]: IRequestProtocol[] | null } = {};
 
+  /** 当前连接状态 */
+  get state(): NetNodeState {
+    return this._state;
+  }
+
   init(
     socket: ISocket,
     protocol: IProtocolHelper,

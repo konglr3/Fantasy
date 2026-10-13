@@ -1,4 +1,15 @@
 import { encodeOuterFrame, OuterStreamReassembler } from './OuterStreamReassembler';
+/** 将 TypedArray 转为可交给 WebSocket.send 的 ArrayBuffer（兼容偏移视图） */
+function toArrayBuffer(frame) {
+    if (frame.buffer instanceof ArrayBuffer) {
+        if (frame.byteOffset === 0 && frame.byteLength === frame.buffer.byteLength) {
+            return frame.buffer;
+        }
+        return frame.buffer.slice(frame.byteOffset, frame.byteOffset + frame.byteLength);
+    }
+    // SharedArrayBuffer：拷贝到新的 ArrayBuffer
+    return frame.slice().buffer;
+}
 export class WebSocketSession {
     constructor() {
         this.reassembler = new OuterStreamReassembler();
@@ -43,7 +54,8 @@ export class WebSocketSession {
         if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
             throw new Error('WebSocket is not open');
         }
-        this.ws.send(frame);
+        // WebSocket.send 需要 ArrayBuffer；Uint8Array.buffer 在 TS 中为 ArrayBufferLike
+        this.ws.send(toArrayBuffer(frame));
     }
     sendOuter(params) {
         this.sendFrame(encodeOuterFrame(params));

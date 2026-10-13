@@ -58,6 +58,8 @@ export declare class NetNode {
     protected _listener: {
         [key: number]: IRequestProtocol[] | null;
     };
+    /** 当前连接状态 */
+    get state(): NetNodeState;
     init(socket: ISocket, protocol: IProtocolHelper, networkTips?: INetworkTips | null, execFunc?: ExecuterFunc | null): void;
     connect(options: NetConnectOptions): boolean;
     protected updateNetTips(tipsType: NetTipsType, isShow: boolean): void;

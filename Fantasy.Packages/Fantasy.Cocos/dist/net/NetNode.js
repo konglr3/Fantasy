@@ -45,6 +45,10 @@ export class NetNode {
         this._requests = [];
         this._listener = {};
     }
+    /** 当前连接状态 */
+    get state() {
+        return this._state;
+    }
     init(socket, protocol, networkTips = null, execFunc = null) {
         Logger.logNet('网络初始化');
         this._socket = socket;

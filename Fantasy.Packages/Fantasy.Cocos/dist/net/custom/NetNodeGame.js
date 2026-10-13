@@ -84,10 +84,24 @@ export class NetNodeGame extends NetNode {
             }
         });
     }
+    /**
+     * 发送不期待 Response 的 Outer 消息（对齐 Fantasy Session.Send，rpcId=0）
+     * @alias notify
+     */
+    send(cmd, reqName, params, address = 0n) {
+        this.notify(cmd, reqName, params, address);
+    }
     /** 发送不期待 Response 的消息 */
     notify(cmd, reqName, params, address = 0n) {
         const buffer = this._gameProtocol.encodeFireAndForget(cmd, reqName, params, address);
         this.sendNotify(cmd, buffer);
+    }
+    /**
+     * RPC 调用（对齐 Fantasy Session.Call）：发送 Request，等待同 rpcId 的 Response。
+     * @alias req
+     */
+    callRpc(cmd, reqName, respName, params, address = 0n) {
+        return this.req(cmd, reqName, respName, params, address);
     }
     /**
      * 监听服务器推送
