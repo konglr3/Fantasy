@@ -27,6 +27,9 @@ export {
   WebSocketReturn,
   WebSock,
   IProtocolHelper,
+  isOuterPushDef,
+  isOuterRpcDef,
+  isOuterSendDef,
   NetProtocolProtobuf,
   NetProtocolJson,
   NetChannelType,
@@ -47,5 +50,8 @@ export type {
   NetCallFunc,
   NetData,
   NetConnectOptions,
+  OuterPushDef,
+  OuterRpcDef,
+  OuterSendDef,
   SocketFunc,
 } from './net';

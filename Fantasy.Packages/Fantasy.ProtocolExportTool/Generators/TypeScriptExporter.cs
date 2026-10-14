@@ -22,6 +22,8 @@ public sealed class TypeScriptExporter(
 
     protected override string GeneratedFileExtension => "ts";
 
+    protected override string OuterMessageHelperFileName => $"OuterProtocol.{GeneratedFileExtension}";
+
     protected override string GenerateRouteTypes(IReadOnlyDictionary<string, int> routeTypes)
     {
         if (routeTypes.Count == 0)
@@ -192,7 +194,99 @@ public sealed class TypeScriptExporter(
         IReadOnlySet<string> innerNamespaces,
         IReadOnlyDictionary<string, MessageDefinition> messageDefinitions) => string.Empty;
 
-    protected override string GenerateOuterMessageHelper(IReadOnlyDictionary<string, MessageDefinition> messageDefinitions) => string.Empty;
+    protected override string GenerateOuterMessageHelper(IReadOnlyDictionary<string, MessageDefinition> messageDefinitions)
+    {
+        if (messageDefinitions.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var sendEntries = new List<string>();
+        var rpcEntries = new List<string>();
+        var pushEntries = new List<string>();
+
+        foreach (var (name, message) in messageDefinitions.OrderBy(x => x.Key, StringComparer.Ordinal))
+        {
+            if (!message.HasOpCode)
+            {
+                continue;
+            }
+
+            switch (message.MessageType)
+            {
+                case MessageType.Message:
+                case MessageType.RouteTypeMessage:
+                case MessageType.RoamingMessage:
+                    sendEntries.Add(
+                        $"  {name}: {{ opcode: OuterOpcode.{name}, reqName: '{EscapeTsSingleQuoted(name)}' }}");
+                    break;
+                case MessageType.Request:
+                case MessageType.RouteTypeRequest:
+                case MessageType.RoamingRequest:
+                    if (string.IsNullOrEmpty(message.ResponseType))
+                    {
+                        break;
+                    }
+
+                    rpcEntries.Add(
+                        $"  {name}: {{ opcode: OuterOpcode.{name}, reqName: '{EscapeTsSingleQuoted(name)}', respName: '{EscapeTsSingleQuoted(message.ResponseType)}' }}");
+                    break;
+                case MessageType.Response:
+                case MessageType.RouteTypeResponse:
+                case MessageType.RoamingResponse:
+                    // 服务端推送 / 响应也可按类型名监听
+                    pushEntries.Add(
+                        $"  {name}: {{ opcode: OuterOpcode.{name}, typeName: '{EscapeTsSingleQuoted(name)}' }}");
+                    break;
+            }
+        }
+
+        if (sendEntries.Count == 0 && rpcEntries.Count == 0 && pushEntries.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var sb = new StringBuilder();
+        sb.Append(FileHeader);
+        sb.AppendLine("import { OuterOpcode } from './OuterOpcode';");
+        sb.AppendLine();
+        sb.AppendLine("/** 单向消息绑定（IMessage / Route / Roaming Message） */");
+        sb.AppendLine("export type OuterSendDef = { readonly opcode: number; readonly reqName: string };");
+        sb.AppendLine();
+        sb.AppendLine("/** RPC 绑定（IRequest ↔ ResponseType） */");
+        sb.AppendLine(
+            "export type OuterRpcDef = { readonly opcode: number; readonly reqName: string; readonly respName: string };");
+        sb.AppendLine();
+        sb.AppendLine("/** 推送 / 响应消息绑定（按 opcode 监听） */");
+        sb.AppendLine("export type OuterPushDef = { readonly opcode: number; readonly typeName: string };");
+        sb.AppendLine();
+
+        sb.AppendLine("/** send(def, params) 使用 */");
+        sb.AppendLine("export const OuterSend = {");
+        sb.AppendLine(sendEntries.Count > 0 ? string.Join(",\n", sendEntries) : string.Empty);
+        sb.AppendLine("} as const;");
+        sb.AppendLine();
+        sb.AppendLine("export type OuterSendKey = keyof typeof OuterSend;");
+        sb.AppendLine();
+
+        sb.AppendLine("/** callRpc(def, params) 使用：opcode / reqName / respName 已绑定 */");
+        sb.AppendLine("export const OuterRpc = {");
+        sb.AppendLine(rpcEntries.Count > 0 ? string.Join(",\n", rpcEntries) : string.Empty);
+        sb.AppendLine("} as const;");
+        sb.AppendLine();
+        sb.AppendLine("export type OuterRpcKey = keyof typeof OuterRpc;");
+        sb.AppendLine();
+
+        sb.AppendLine("/** on(def, callback) 使用 */");
+        sb.AppendLine("export const OuterPush = {");
+        sb.AppendLine(pushEntries.Count > 0 ? string.Join(",\n", pushEntries) : string.Empty);
+        sb.AppendLine("} as const;");
+        sb.AppendLine();
+        sb.AppendLine("export type OuterPushKey = keyof typeof OuterPush;");
+        sb.AppendLine();
+
+        return sb.ToString();
+    }
 
     protected override string GenerateOuterEnums(IReadOnlyList<EnumDefinition> enumDefinitions)
     {

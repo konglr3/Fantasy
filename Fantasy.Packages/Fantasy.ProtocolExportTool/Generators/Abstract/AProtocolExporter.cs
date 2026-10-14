@@ -39,6 +39,8 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
     protected readonly string ClientDirectory = NormalizeOptionalPath(clientDirectory);
     protected readonly string ServerDirectory = NormalizeOptionalPath(serverDirectory);
     protected virtual string GeneratedFileExtension => "cs";
+    /// <summary>Outer MessageHelper / 协议绑定表文件名（不含目录）</summary>
+    protected virtual string OuterMessageHelperFileName => $"NetworkProtocolHelper.{GeneratedFileExtension}";
     protected IReadOnlyDictionary<string, MessageDefinition> OuterMessages => _outerMessages;
     
     private static string NormalizePath(string path)
@@ -279,9 +281,9 @@ public abstract partial class AProtocolExporter(string protocolDirectory, string
                 Directory.CreateDirectory(ClientDirectory);
             }
 
-            var filePath = Path.Combine(ClientDirectory, $"NetworkProtocolHelper.{GeneratedFileExtension}");
+            var filePath = Path.Combine(ClientDirectory, OuterMessageHelperFileName);
             await File.WriteAllTextAsync(filePath, template);
-            // AnsiConsole.MarkupLine($"[green]Generated NetworkProtocolHelper.cs at {filePath}[/]");
+            // AnsiConsole.MarkupLine($"[green]Generated {OuterMessageHelperFileName} at {filePath}[/]");
         }
     }
 

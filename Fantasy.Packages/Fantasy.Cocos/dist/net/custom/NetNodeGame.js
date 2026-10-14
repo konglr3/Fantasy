@@ -1,4 +1,5 @@
 import { NetNode, WebSocketReturn } from '../NetNode';
+import { isOuterPushDef, isOuterRpcDef, isOuterSendDef, } from '../ProtocolMeta';
 import { WebSock } from '../WebSock';
 import { NetProtocolProtobuf } from '../protocol/NetProtocolProtobuf';
 import { NetErrorCode } from './NetErrorCode';
@@ -84,36 +85,48 @@ export class NetNodeGame extends NetNode {
             }
         });
     }
-    /**
-     * 发送不期待 Response 的 Outer 消息（对齐 Fantasy Session.Send，rpcId=0）
-     * @alias notify
-     */
-    send(cmd, reqName, params, address = 0n) {
-        this.notify(cmd, reqName, params, address);
+    send(defOrCmd, reqNameOrParams, paramsOrAddress, address = 0n) {
+        if (isOuterSendDef(defOrCmd) || isOuterRpcDef(defOrCmd)) {
+            const def = defOrCmd;
+            const params = reqNameOrParams;
+            const addr = paramsOrAddress ?? 0n;
+            this.notify(def.opcode, def.reqName, params, addr);
+            return;
+        }
+        this.notify(defOrCmd, reqNameOrParams, paramsOrAddress, address);
     }
     /** 发送不期待 Response 的消息 */
     notify(cmd, reqName, params, address = 0n) {
         const buffer = this._gameProtocol.encodeFireAndForget(cmd, reqName, params, address);
         this.sendNotify(cmd, buffer);
     }
-    /**
-     * RPC 调用（对齐 Fantasy Session.Call）：发送 Request，等待同 rpcId 的 Response。
-     * @alias req
-     */
-    callRpc(cmd, reqName, respName, params, address = 0n) {
-        return this.req(cmd, reqName, respName, params, address);
+    callRpc(defOrCmd, reqNameOrParams, respNameOrAddress, params, address = 0n) {
+        if (isOuterRpcDef(defOrCmd)) {
+            const def = defOrCmd;
+            return this.req(def.opcode, def.reqName, def.respName, reqNameOrParams, respNameOrAddress ?? 0n);
+        }
+        return this.req(defOrCmd, reqNameOrParams, respNameOrAddress, params, address);
     }
-    /**
-     * 监听服务器推送
-     */
-    on(cmd, respName, callback, target) {
+    on(defOrCmd, respNameOrCallback, callbackOrTarget, target) {
+        if (isOuterPushDef(defOrCmd)) {
+            const def = defOrCmd;
+            this.addResponeHandler({
+                cmd: def.opcode,
+                respName: def.typeName,
+                callback: {
+                    target: callbackOrTarget,
+                    callback: respNameOrCallback,
+                },
+            });
+            return;
+        }
         const co = {
             target: target,
-            callback: callback,
+            callback: callbackOrTarget,
         };
         const ireqp = {
-            cmd: cmd,
-            respName: respName,
+            cmd: defOrCmd,
+            respName: respNameOrCallback,
             callback: co,
         };
         this.addResponeHandler(ireqp);

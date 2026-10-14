@@ -1,62 +1,60 @@
 # NetChannel Demo
 
-基于 `src/net`（`netChannel` / `NetNodeGame`）的 Fantasy Outer 收发示例，含：
+基于 `src/net` 的 Fantasy Outer 收发示例。协议导出工具会生成 `OuterProtocol.ts`，把 **opcode / 请求名 / 响应名** 绑在一起，调用时不必再手写三元组。
 
-- **send**：单向消息（不期待 Response）
-- **callRpc**：Request / Response RPC
-
-## 前置
-
-1. 用 `Fantasy.ProtocolExportTool` 把 TypeScript 协议导出到 `src/proto`
-2. 准备与服务器一致的 Outer `.proto`（供 `protobufjs` 加载）
-3. Gate WebSocket 已监听（默认 `127.0.0.1:20000`）
-
-## 用法
+## 简化后的 API
 
 ```ts
-import { runNetChannelDemo, demoSendMessage, demoCallRpcTestRequest } from './main';
+import { OuterSend, OuterRpc, OuterPush } from '../../src/proto/OuterProtocol';
 
-const stop = await runNetChannelDemo({
-  protoRootOrPath: 'db://assets/resources/proto/OuterMessage.proto',
-  remoteHost: '127.0.0.1',
-  remotePort: '20000',
-  autoSendTest: true, // 连接后自动跑 send + callRpc
+// send：单向
+netChannel.game.send(OuterSend.C2G_TestMessage, { Tag: 'hello' });
+
+// callRpc：Request ↔ Response 已绑定
+const ret = await netChannel.game.callRpc(OuterRpc.C2G_TestRequest, {
+  Tag: 'rpc',
+  Data: [1, 2, 3],
 });
 
-// 或连接后手动调用：
-// demoSendMessage();
-// await demoCallRpcTestRequest();
-
-// stop();
-```
-
-## API 对照
-
-| Demo | NetNodeGame | Fantasy.Net Session |
-|------|-------------|---------------------|
-| `send` | `send` / `notify` | `Session.Send` |
-| `callRpc` | `callRpc` / `req` | `Session.Call` |
-
-### send
-
-```ts
-netChannel.game.send(OuterOpcode.C2G_TestMessage, 'C2G_TestMessage', {
-  Tag: 'hello',
+// on：推送
+netChannel.game.on(OuterPush.G2C_PushMessage, (data) => {
+  console.log(data);
 });
 ```
 
-### callRpc
+旧写法仍可用（兼容）：
 
 ```ts
-const ret = await netChannel.game.callRpc(
+netChannel.game.callRpc(
   OuterOpcode.C2G_TestRequest,
   'C2G_TestRequest',
   'G2C_TestResponse',
   { Tag: 'rpc', Data: [1, 2, 3] }
 );
-if (ret.isSucc) {
-  console.log(ret.res);
-} else {
-  console.warn(ret.err); // Response.errorCode
-}
+```
+
+## 导出产物
+
+| 文件 | 作用 |
+|------|------|
+| `OuterOpcode.ts` | OpCode 常量 |
+| `OuterMessage.ts` | 消息 interface（含 `__responseType` 文档） |
+| `OuterProtocol.ts` | `OuterSend` / `OuterRpc` / `OuterPush` 绑定表 |
+| `ProtoOuterDispatcherInit.ts` | protobufjs 注册 |
+
+## 前置
+
+1. ProtocolExportTool 导出到 `src/proto`
+2. 准备与服务器一致的 Outer `.proto`
+3. Gate WebSocket 监听（默认 `127.0.0.1:20000`）
+
+## 运行入口
+
+```ts
+import { runNetChannelDemo } from './main';
+
+const stop = await runNetChannelDemo({
+  protoRootOrPath: 'db://assets/resources/proto/OuterMessage.proto',
+  autoSendTest: true,
+});
 ```

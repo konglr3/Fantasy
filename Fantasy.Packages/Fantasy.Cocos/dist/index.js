@@ -6,5 +6,5 @@ export { WebSocketSession } from './network/WebSocketSession';
 export { FantasyRuntime, NetworkProtocolType } from './runtime/FantasyRuntime';
 export { Scene } from './runtime/Scene';
 // Cocos 业务网络层（重连 / 心跳 / RPC），底层使用 Fantasy Outer 包格式
-export { Logger, NetManager, NetNode, NetNodeState, NetTipsType, WebSocketReturn, WebSock, IProtocolHelper, NetProtocolProtobuf, NetProtocolJson, NetChannelType, NetChannelManager, netChannel, NetConfig, NetErrorCode, NetGameTips, NetNodeGame, } from './net';
+export { Logger, NetManager, NetNode, NetNodeState, NetTipsType, WebSocketReturn, WebSock, IProtocolHelper, isOuterPushDef, isOuterRpcDef, isOuterSendDef, NetProtocolProtobuf, NetProtocolJson, NetChannelType, NetChannelManager, netChannel, NetConfig, NetErrorCode, NetGameTips, NetNodeGame, } from './net';
 //# sourceMappingURL=index.js.map

@@ -1,6 +1,14 @@
 import type { ProtoOuterDispatcher } from '../../protobuf/ProtoOuterDispatcher';
 import { CallbackObject, IRequestProtocol, IResponseProtocol, NetCallFunc } from '../NetInterface';
 import { NetNode, WebSocketReturn } from '../NetNode';
+import {
+  isOuterPushDef,
+  isOuterRpcDef,
+  isOuterSendDef,
+  OuterPushDef,
+  OuterRpcDef,
+  OuterSendDef,
+} from '../ProtocolMeta';
 import { WebSock } from '../WebSock';
 import { NetProtocolProtobuf } from '../protocol/NetProtocolProtobuf';
 import { NetErrorCode } from './NetErrorCode';
@@ -106,15 +114,37 @@ export class NetNodeGame extends NetNode {
 
   /**
    * 发送不期待 Response 的 Outer 消息（对齐 Fantasy Session.Send，rpcId=0）
-   * @alias notify
+   *
+   * 简化写法（协议导出 OuterSend）：
+   * `send(OuterSend.C2G_TestMessage, { Tag: 'hi' })`
    */
+  public send(def: OuterSendDef, params?: Record<string, unknown>, address?: bigint): void;
   public send(
     cmd: number,
     reqName?: string,
     params?: Record<string, unknown>,
+    address?: bigint
+  ): void;
+  public send(
+    defOrCmd: number | OuterSendDef,
+    reqNameOrParams?: string | Record<string, unknown>,
+    paramsOrAddress?: Record<string, unknown> | bigint,
     address: bigint = 0n
   ): void {
-    this.notify(cmd, reqName, params, address);
+    if (isOuterSendDef(defOrCmd) || isOuterRpcDef(defOrCmd)) {
+      const def = defOrCmd;
+      const params = reqNameOrParams as Record<string, unknown> | undefined;
+      const addr = (paramsOrAddress as bigint | undefined) ?? 0n;
+      this.notify(def.opcode, def.reqName, params, addr);
+      return;
+    }
+
+    this.notify(
+      defOrCmd,
+      reqNameOrParams as string | undefined,
+      paramsOrAddress as Record<string, unknown> | undefined,
+      address
+    );
   }
 
   /** 发送不期待 Response 的消息 */
@@ -129,30 +159,83 @@ export class NetNodeGame extends NetNode {
   }
 
   /**
-   * RPC 调用（对齐 Fantasy Session.Call）：发送 Request，等待同 rpcId 的 Response。
-   * @alias req
+   * RPC 调用（对齐 Fantasy Session.Call）
+   *
+   * 简化写法（协议导出 OuterRpc，opcode/req/resp 已绑定）：
+   * `callRpc(OuterRpc.C2G_TestRequest, { Tag: 'hi', Data: [1] })`
    */
-  public callRpc<T>(
+  public call<T>(
+    def: OuterRpcDef,
+    params?: Record<string, unknown>,
+    address?: bigint
+  ): Promise<WebSocketReturn<T>>;
+  public call<T>(
     cmd: number,
     reqName: string,
     respName: string,
     params?: Record<string, unknown>,
+    address?: bigint
+  ): Promise<WebSocketReturn<T>>;
+  public call<T>(
+    defOrCmd: number | OuterRpcDef,
+    reqNameOrParams?: string | Record<string, unknown>,
+    respNameOrAddress?: string | bigint,
+    params?: Record<string, unknown>,
     address: bigint = 0n
   ): Promise<WebSocketReturn<T>> {
-    return this.req<T>(cmd, reqName, respName, params, address);
+    if (isOuterRpcDef(defOrCmd)) {
+      const def = defOrCmd;
+      return this.req<T>(
+        def.opcode,
+        def.reqName,
+        def.respName,
+        reqNameOrParams as Record<string, unknown> | undefined,
+        (respNameOrAddress as bigint | undefined) ?? 0n
+      );
+    }
+
+    return this.req<T>(
+      defOrCmd,
+      reqNameOrParams as string,
+      respNameOrAddress as string,
+      params,
+      address
+    );
   }
 
   /**
    * 监听服务器推送
+   *
+   * 简化写法：`on(OuterPush.G2C_PushMessage, (data) => { ... })`
    */
-  on(cmd: number, respName: string, callback: NetCallFunc, target?: any): void {
+  public on(def: OuterPushDef, callback: NetCallFunc, target?: any): void;
+  public on(cmd: number, respName: string, callback: NetCallFunc, target?: any): void;
+  public on(
+    defOrCmd: number | OuterPushDef,
+    respNameOrCallback: string | NetCallFunc,
+    callbackOrTarget?: NetCallFunc | any,
+    target?: any
+  ): void {
+    if (isOuterPushDef(defOrCmd)) {
+      const def = defOrCmd;
+      this.addResponeHandler({
+        cmd: def.opcode,
+        respName: def.typeName,
+        callback: {
+          target: callbackOrTarget,
+          callback: respNameOrCallback as NetCallFunc,
+        },
+      });
+      return;
+    }
+
     const co: CallbackObject = {
       target: target,
-      callback: callback,
+      callback: callbackOrTarget as NetCallFunc,
     };
     const ireqp: IRequestProtocol = {
-      cmd: cmd,
-      respName: respName,
+      cmd: defOrCmd,
+      respName: respNameOrCallback as string,
       callback: co,
     };
     this.addResponeHandler(ireqp);

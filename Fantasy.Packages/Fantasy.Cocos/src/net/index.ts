@@ -11,6 +11,8 @@ export type {
   SocketFunc,
 } from './NetInterface';
 export { IProtocolHelper } from './NetInterface';
+export type { OuterPushDef, OuterRpcDef, OuterSendDef } from './ProtocolMeta';
+export { isOuterPushDef, isOuterRpcDef, isOuterSendDef } from './ProtocolMeta';
 export { NetManager } from './NetManager';
 export { NetNode, NetNodeState, NetTipsType, WebSocketReturn } from './NetNode';
 export type { NetConnectOptions } from './NetNode';

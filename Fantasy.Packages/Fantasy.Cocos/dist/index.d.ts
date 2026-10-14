@@ -9,6 +9,6 @@ export type { SendOuterParams } from './network/WebSocketSession';
 export { FantasyRuntime, NetworkProtocolType } from './runtime/FantasyRuntime';
 export type { ConnectOptions } from './runtime/FantasyRuntime';
 export { Scene } from './runtime/Scene';
-export { Logger, NetManager, NetNode, NetNodeState, NetTipsType, WebSocketReturn, WebSock, IProtocolHelper, NetProtocolProtobuf, NetProtocolJson, NetChannelType, NetChannelManager, netChannel, NetConfig, NetErrorCode, NetGameTips, NetNodeGame, } from './net';
-export type { CallbackObject, INetworkTips, IRequestProtocol, IResponseProtocol, ISocket, MessageFunc, NetCallFunc, NetData, NetConnectOptions, SocketFunc, } from './net';
+export { Logger, NetManager, NetNode, NetNodeState, NetTipsType, WebSocketReturn, WebSock, IProtocolHelper, isOuterPushDef, isOuterRpcDef, isOuterSendDef, NetProtocolProtobuf, NetProtocolJson, NetChannelType, NetChannelManager, netChannel, NetConfig, NetErrorCode, NetGameTips, NetNodeGame, } from './net';
+export type { CallbackObject, INetworkTips, IRequestProtocol, IResponseProtocol, ISocket, MessageFunc, NetCallFunc, NetData, NetConnectOptions, OuterPushDef, OuterRpcDef, OuterSendDef, SocketFunc, } from './net';
 //# sourceMappingURL=index.d.ts.map
