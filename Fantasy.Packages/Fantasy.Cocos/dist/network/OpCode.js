@@ -1,9 +1,15 @@
-export const OpCodeProtocolType = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.OpCode = exports.OpCodeType = exports.OpCodeProtocolType = void 0;
+exports.encodeOpCodeId = encodeOpCodeId;
+exports.decodeOpCodeId = decodeOpCodeId;
+exports.createOpCode = createOpCode;
+exports.OpCodeProtocolType = {
     ProtoBuf: 0,
     Bson: 1,
     MemoryPack: 2
 };
-export const OpCodeType = {
+exports.OpCodeType = {
     OuterMessage: 1,
     OuterRequest: 2,
     OuterResponse: 3,
@@ -31,13 +37,13 @@ export const OpCodeType = {
     OuterPingRequest: 30,
     OuterPingResponse: 31
 };
-export function encodeOpCodeId(parts) {
+function encodeOpCodeId(parts) {
     let result = parts.index >>> 0;
     result |= (parts.opCodeProtocolType & 0xf) << 23;
     result |= (parts.protocol & 0x1f) << 27;
     return result >>> 0;
 }
-export function decodeOpCodeId(opCodeId) {
+function decodeOpCodeId(opCodeId) {
     let x = opCodeId >>> 0;
     const index = x & 0x7fffff;
     x >>>= 23;
@@ -46,12 +52,12 @@ export function decodeOpCodeId(opCodeId) {
     const protocol = x & 0x1f;
     return { opCodeProtocolType, protocol, index };
 }
-export function createOpCode(opCodeProtocolType, protocol, index) {
+function createOpCode(opCodeProtocolType, protocol, index) {
     return encodeOpCodeId({ opCodeProtocolType, protocol, index });
 }
-export const OpCode = {
-    PingRequest: createOpCode(OpCodeProtocolType.ProtoBuf, OpCodeType.OuterPingRequest, 1),
-    PingResponse: createOpCode(OpCodeProtocolType.ProtoBuf, OpCodeType.OuterPingResponse, 1),
+exports.OpCode = {
+    PingRequest: createOpCode(exports.OpCodeProtocolType.ProtoBuf, exports.OpCodeType.OuterPingRequest, 1),
+    PingResponse: createOpCode(exports.OpCodeProtocolType.ProtoBuf, exports.OpCodeType.OuterPingResponse, 1),
     Create: createOpCode
 };
 //# sourceMappingURL=OpCode.js.map

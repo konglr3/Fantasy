@@ -1,29 +1,33 @@
-import { Logger } from './Logger';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NetNode = exports.NetNodeState = exports.NetTipsType = exports.WebSocketReturn = void 0;
+const Logger_1 = require("./Logger");
 const NetNodeStateStrs = ['已关闭', '连接中', '验证中', '可传输数据'];
-export class WebSocketReturn {
+class WebSocketReturn {
     constructor() {
         /** 是否请求成功 */
         this.isSucc = false;
     }
 }
+exports.WebSocketReturn = WebSocketReturn;
 /** 网络提示类型枚举 */
-export var NetTipsType;
+var NetTipsType;
 (function (NetTipsType) {
     NetTipsType[NetTipsType["Connecting"] = 0] = "Connecting";
     NetTipsType[NetTipsType["ReConnecting"] = 1] = "ReConnecting";
     NetTipsType[NetTipsType["Requesting"] = 2] = "Requesting";
     NetTipsType[NetTipsType["Disconnecting"] = 3] = "Disconnecting";
-})(NetTipsType || (NetTipsType = {}));
+})(NetTipsType || (exports.NetTipsType = NetTipsType = {}));
 /** 网络状态枚举 */
-export var NetNodeState;
+var NetNodeState;
 (function (NetNodeState) {
     NetNodeState[NetNodeState["Closed"] = 0] = "Closed";
     NetNodeState[NetNodeState["Connecting"] = 1] = "Connecting";
     NetNodeState[NetNodeState["Checking"] = 2] = "Checking";
     NetNodeState[NetNodeState["Working"] = 3] = "Working";
-})(NetNodeState || (NetNodeState = {}));
+})(NetNodeState || (exports.NetNodeState = NetNodeState = {}));
 /** 网络节点 */
-export class NetNode {
+class NetNode {
     constructor() {
         this._connectOptions = null;
         this._autoReconnect = 0;
@@ -50,7 +54,7 @@ export class NetNode {
         return this._state;
     }
     init(socket, protocol, networkTips = null, execFunc = null) {
-        Logger.logNet('网络初始化');
+        Logger_1.Logger.logNet('网络初始化');
         this._socket = socket;
         this._protocolHelper = protocol;
         this._networkTips = networkTips;
@@ -98,7 +102,7 @@ export class NetNode {
     }
     close(code, reason) {
         if (this._state == NetNodeState.Closed) {
-            Logger.logNet('网络节点已断开');
+            Logger_1.Logger.logNet('网络节点已断开');
             return;
         }
         this.clearTimer();
@@ -146,7 +150,7 @@ export class NetNode {
         }
     }
     onConnected(_event) {
-        Logger.logNet('网络已连接');
+        Logger_1.Logger.logNet('网络已连接');
         this._isSocketOpen = true;
         if (this._connectedCallback !== null) {
             this._state = NetNodeState.Checking;
@@ -157,14 +161,14 @@ export class NetNode {
         else {
             this.onChecked();
         }
-        Logger.logNet(`网络已连接当前状态为【${NetNodeStateStrs[this._state]}】`);
+        Logger_1.Logger.logNet(`网络已连接当前状态为【${NetNodeStateStrs[this._state]}】`);
     }
     onChecked() {
-        Logger.logNet('连接验证成功，进入工作状态');
+        Logger_1.Logger.logNet('连接验证成功，进入工作状态');
         this._state = NetNodeState.Working;
         const requests = this._requests.concat();
         if (requests.length > 0) {
-            Logger.logNet(`请求【${this._requests.length}】个待发送的信息`);
+            Logger_1.Logger.logNet(`请求【${this._requests.length}】个待发送的信息`);
             for (let i = 0; i < requests.length;) {
                 const req = requests[i];
                 this._socket.send(req.buffer);
@@ -196,12 +200,12 @@ export class NetNode {
     dispatchResponse(iresp) {
         const id = iresp.id;
         const cmd = iresp.cmd;
-        Logger.logNet(`接受到命令【${cmd}】rpcId=${id}`);
+        Logger_1.Logger.logNet(`接受到命令【${cmd}】rpcId=${id}`);
         if (id !== 0 && this._requests.length > 0) {
             for (let reqIdx = 0; reqIdx < this._requests.length; reqIdx++) {
                 const ireqp = this._requests[reqIdx];
                 if (ireqp.id == id) {
-                    Logger.logNet(`触发请求命令【${cmd}】的回调`);
+                    Logger_1.Logger.logNet(`触发请求命令【${cmd}】的回调`);
                     this._protocolHelper.decodeCustom(ireqp, iresp);
                     if (ireqp.callback) {
                         this._callbackExecuter(ireqp.callback, iresp);
@@ -217,7 +221,7 @@ export class NetNode {
         const listeners = this._listener[cmd];
         if (listeners != null) {
             for (const ireqp of listeners) {
-                Logger.logNet(`触发监听命令【${cmd}】的回调`);
+                Logger_1.Logger.logNet(`触发监听命令【${cmd}】的回调`);
                 this._protocolHelper.decodeCustom(ireqp, iresp);
                 if (ireqp.callback) {
                     this._callbackExecuter(ireqp.callback, iresp.data);
@@ -226,14 +230,14 @@ export class NetNode {
         }
     }
     onError(event) {
-        Logger.error('socket error', event);
+        Logger_1.Logger.error('socket error', event);
     }
     onClosed(_event) {
         this._state = NetNodeState.Closed;
         this.clearTimer();
         this.updateNetTips(NetTipsType.Disconnecting, true);
         if (this._disconnectCallback && !this._disconnectCallback()) {
-            Logger.logNet('断开连接');
+            Logger_1.Logger.logNet('断开连接');
             return;
         }
         if (this.isAutoReconnect()) {
@@ -254,7 +258,7 @@ export class NetNode {
         this._protocolHelper.encode(reqProtocol);
         for (let i = 0; i < this._requests.length; ++i) {
             if (this._requests[i].cmd == reqProtocol.cmd) {
-                Logger.logNet(`命令【${reqProtocol.cmd}】重复请求`);
+                Logger_1.Logger.logNet(`命令【${reqProtocol.cmd}】重复请求`);
                 return false;
             }
         }
@@ -271,7 +275,7 @@ export class NetNode {
         if (this._state == NetNodeState.Working || force) {
             this._socket.send(reqProtocol.buffer);
         }
-        Logger.logNet(`队列命令为【${reqProtocol.cmd}】的请求，等待请求数据的回调`);
+        Logger_1.Logger.logNet(`队列命令为【${reqProtocol.cmd}】的请求，等待请求数据的回调`);
         if (reqProtocol.callback) {
             this._requests.push(reqProtocol);
             if (showTips) {
@@ -325,7 +329,7 @@ export class NetNode {
             clearTimeout(this._receiveMsgTimer);
         }
         this._receiveMsgTimer = setTimeout(() => {
-            Logger.logNet('接收消息定时器关闭网络连接');
+            Logger_1.Logger.logNet('接收消息定时器关闭网络连接');
             this._socket.close();
         }, this._receiveTime);
     }
@@ -334,7 +338,7 @@ export class NetNode {
             clearTimeout(this._keepAliveTimer);
         }
         this._keepAliveTimer = setTimeout(() => {
-            Logger.logNet('网络节点发送心跳信息');
+            Logger_1.Logger.logNet('网络节点发送心跳信息');
             if (this._state == NetNodeState.Working) {
                 const hb = this._protocolHelper.buildHeartbeat();
                 if (hb) {
@@ -361,4 +365,5 @@ export class NetNode {
         }
     }
 }
+exports.NetNode = NetNode;
 //# sourceMappingURL=NetNode.js.map

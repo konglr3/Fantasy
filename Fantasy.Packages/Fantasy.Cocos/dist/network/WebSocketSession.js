@@ -1,4 +1,7 @@
-import { encodeOuterFrame, OuterStreamReassembler } from './OuterStreamReassembler';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.WebSocketSession = void 0;
+const OuterStreamReassembler_1 = require("./OuterStreamReassembler");
 /** 将 TypedArray 转为可交给 WebSocket.send 的 ArrayBuffer（兼容偏移视图） */
 function toArrayBuffer(frame) {
     if (frame.buffer instanceof ArrayBuffer) {
@@ -10,9 +13,9 @@ function toArrayBuffer(frame) {
     // SharedArrayBuffer：拷贝到新的 ArrayBuffer
     return frame.slice().buffer;
 }
-export class WebSocketSession {
+class WebSocketSession {
     constructor() {
-        this.reassembler = new OuterStreamReassembler();
+        this.reassembler = new OuterStreamReassembler_1.OuterStreamReassembler();
         this.onOuterPacket = null;
         this.onClose = null;
         this.onError = null;
@@ -58,7 +61,7 @@ export class WebSocketSession {
         this.ws.send(toArrayBuffer(frame));
     }
     sendOuter(params) {
-        this.sendFrame(encodeOuterFrame(params));
+        this.sendFrame((0, OuterStreamReassembler_1.encodeOuterFrame)(params));
     }
     dispose() {
         this.reassembler.clear();
@@ -80,4 +83,5 @@ export class WebSocketSession {
         this.onError = null;
     }
 }
+exports.WebSocketSession = WebSocketSession;
 //# sourceMappingURL=WebSocketSession.js.map

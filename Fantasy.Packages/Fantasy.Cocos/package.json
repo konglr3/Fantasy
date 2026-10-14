@@ -21,12 +21,12 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
+      "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./protobuf": {
       "types": "./dist/protobuf/index.d.ts",
-      "import": "./dist/protobuf/index.js",
+      "require": "./dist/protobuf/index.js",
       "default": "./dist/protobuf/index.js"
     }
   },

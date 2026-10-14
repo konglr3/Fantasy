@@ -1,4 +1,8 @@
-export class ProtoOuterDispatcher {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ProtoOuterDispatcher = void 0;
+exports.attachProtoOuterDispatcher = attachProtoOuterDispatcher;
+class ProtoOuterDispatcher {
     constructor(root) {
         this.root = root;
         this.types = new Map();
@@ -70,7 +74,8 @@ export class ProtoOuterDispatcher {
         }
     }
 }
-export function attachProtoOuterDispatcher(session, dispatcher) {
+exports.ProtoOuterDispatcher = ProtoOuterDispatcher;
+function attachProtoOuterDispatcher(session, dispatcher) {
     const prev = session.onOuterPacket;
     session.onOuterPacket = (packet) => {
         dispatcher.dispatch(packet);

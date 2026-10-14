@@ -1,18 +1,23 @@
-export function isOuterRpcDef(value) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isOuterRpcDef = isOuterRpcDef;
+exports.isOuterSendDef = isOuterSendDef;
+exports.isOuterPushDef = isOuterPushDef;
+function isOuterRpcDef(value) {
     return (typeof value === 'object' &&
         value !== null &&
         typeof value.opcode === 'number' &&
         typeof value.reqName === 'string' &&
         typeof value.respName === 'string');
 }
-export function isOuterSendDef(value) {
+function isOuterSendDef(value) {
     return (typeof value === 'object' &&
         value !== null &&
         typeof value.opcode === 'number' &&
         typeof value.reqName === 'string' &&
         !('respName' in value));
 }
-export function isOuterPushDef(value) {
+function isOuterPushDef(value) {
     return (typeof value === 'object' &&
         value !== null &&
         typeof value.opcode === 'number' &&

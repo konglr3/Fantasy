@@ -1,21 +1,24 @@
-import { NetNode, WebSocketReturn } from '../NetNode';
-import { isOuterPushDef, isOuterRpcDef, isOuterSendDef, } from '../ProtocolMeta';
-import { WebSock } from '../WebSock';
-import { NetProtocolProtobuf } from '../protocol/NetProtocolProtobuf';
-import { NetErrorCode } from './NetErrorCode';
-import { NetGameTips } from './NetGameTips';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NetNodeGame = void 0;
+const NetNode_1 = require("../NetNode");
+const ProtocolMeta_1 = require("../ProtocolMeta");
+const WebSock_1 = require("../WebSock");
+const NetProtocolProtobuf_1 = require("../protocol/NetProtocolProtobuf");
+const NetErrorCode_1 = require("./NetErrorCode");
+const NetGameTips_1 = require("./NetGameTips");
 /** Fantasy Outer Protobuf 协议 */
-class GameProtocol extends NetProtocolProtobuf {
+class GameProtocol extends NetProtocolProtobuf_1.NetProtocolProtobuf {
 }
 /** 面向 Fantasy 服务器的网络节点 */
-export class NetNodeGame extends NetNode {
+class NetNodeGame extends NetNode_1.NetNode {
     /** 初始化 Fantasy Outer 通道（WebSock + Protobuf + Tips） */
     setup() {
         this._heartTime = 10000;
         this._receiveTime = 60000;
         this._reconnetTimeOut = 3000;
         this._gameProtocol = new GameProtocol();
-        super.init(new WebSock(), this._gameProtocol, new NetGameTips());
+        super.init(new WebSock_1.WebSock(), this._gameProtocol, new NetGameTips_1.NetGameTips());
     }
     /** 绑定协议导出生成的 ProtoOuterDispatcher */
     setProtoDispatcher(dispatcher) {
@@ -42,8 +45,8 @@ export class NetNodeGame extends NetNode {
                 callback: {
                     target: this,
                     callback: (iresp) => {
-                        const res = new WebSocketReturn();
-                        res.isSucc = iresp.code == NetErrorCode.Success;
+                        const res = new NetNode_1.WebSocketReturn();
+                        res.isSucc = iresp.code == NetErrorCode_1.NetErrorCode.Success;
                         if (res.isSucc) {
                             res.res = iresp.data;
                         }
@@ -68,8 +71,8 @@ export class NetNodeGame extends NetNode {
                 callback: {
                     target: this,
                     callback: (iresp) => {
-                        const res = new WebSocketReturn();
-                        res.isSucc = iresp.code == NetErrorCode.Success;
+                        const res = new NetNode_1.WebSocketReturn();
+                        res.isSucc = iresp.code == NetErrorCode_1.NetErrorCode.Success;
                         if (res.isSucc) {
                             res.res = iresp.data;
                         }
@@ -86,7 +89,7 @@ export class NetNodeGame extends NetNode {
         });
     }
     send(defOrCmd, reqNameOrParams, paramsOrAddress, address = 0n) {
-        if (isOuterSendDef(defOrCmd) || isOuterRpcDef(defOrCmd)) {
+        if ((0, ProtocolMeta_1.isOuterSendDef)(defOrCmd) || (0, ProtocolMeta_1.isOuterRpcDef)(defOrCmd)) {
             const def = defOrCmd;
             const params = reqNameOrParams;
             const addr = paramsOrAddress ?? 0n;
@@ -100,15 +103,18 @@ export class NetNodeGame extends NetNode {
         const buffer = this._gameProtocol.encodeFireAndForget(cmd, reqName, params, address);
         this.sendNotify(cmd, buffer);
     }
-    callRpc(defOrCmd, reqNameOrParams, respNameOrAddress, params, address = 0n) {
-        if (isOuterRpcDef(defOrCmd)) {
+    call(defOrCmd, reqNameOrParams, respNameOrAddress, params, address = 0n) {
+        if ((0, ProtocolMeta_1.isOuterRpcDef)(defOrCmd)) {
             const def = defOrCmd;
             return this.req(def.opcode, def.reqName, def.respName, reqNameOrParams, respNameOrAddress ?? 0n);
         }
         return this.req(defOrCmd, reqNameOrParams, respNameOrAddress, params, address);
     }
+    callRpc(defOrCmd, reqNameOrParams, respNameOrAddress, params, address = 0n) {
+        return this.call(defOrCmd, reqNameOrParams, respNameOrAddress, params, address);
+    }
     on(defOrCmd, respNameOrCallback, callbackOrTarget, target) {
-        if (isOuterPushDef(defOrCmd)) {
+        if ((0, ProtocolMeta_1.isOuterPushDef)(defOrCmd)) {
             const def = defOrCmd;
             this.addResponeHandler({
                 cmd: def.opcode,
@@ -135,4 +141,5 @@ export class NetNodeGame extends NetNode {
         this.removeResponeHandler(cmd, callback, target);
     }
 }
+exports.NetNodeGame = NetNodeGame;
 //# sourceMappingURL=NetNodeGame.js.map

@@ -1,6 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NetConfig = void 0;
 /** Fantasy Gate WebSocket 默认连接配置 */
-export class NetConfig {
+class NetConfig {
 }
+exports.NetConfig = NetConfig;
 /** 游戏服务器 IP / Host */
 NetConfig.gameIp = '127.0.0.1';
 /** 游戏服务器端口（Fantasy 示例默认 20000） */

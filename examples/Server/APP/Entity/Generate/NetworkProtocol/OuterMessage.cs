@@ -9,6 +9,7 @@ using Fantasy.Serialize;
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8618
+#pragma warning disable CS8601 // Possible null reference assignment in generated message copies.
 // ReSharper disable InconsistentNaming
 // ReSharper disable CollectionNeverUpdated.Global
 // ReSharper disable RedundantTypeArgumentsOfMethod
@@ -63,6 +64,23 @@ namespace Fantasy
             AccountName = default;
             MessageObjectPool<C2G_LoginGameRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_LoginGameRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.AccountName = AccountName;
+
+        }
+
+        public C2G_LoginGameRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_LoginGameRequest; } 
         [ProtoIgnore]
         public G2C_LoginGameResponse ResponseType { get; set; }
@@ -106,6 +124,23 @@ namespace Fantasy
             ErrorCode = 0;
             MessageObjectPool<G2C_LoginGameResponse>.Return(this);
         }
+
+        public void CopyTo(ref G2C_LoginGameResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_LoginGameResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.G2C_LoginGameResponse; } 
         [ProtoMember(1)]
         public uint ErrorCode { get; set; }
@@ -148,6 +183,22 @@ namespace Fantasy
         {
             if (!IsPool()) return; 
             MessageObjectPool<C2M_InitComplete>.Return(this);
+        }
+
+        public void CopyTo(ref C2M_InitComplete other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2M_InitComplete DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2M_InitComplete; } 
         [ProtoIgnore]
@@ -198,6 +249,24 @@ namespace Fantasy
             IsSelf = default;
             MessageObjectPool<M2C_UnitCreate>.Return(this);
         }
+
+        public void CopyTo(ref M2C_UnitCreate other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Unit = Unit?.DeepCopy();
+            other.IsSelf = IsSelf;
+
+        }
+
+        public M2C_UnitCreate DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.M2C_UnitCreate; } 
         [ProtoIgnore]
         public int RouteType => Fantasy.RoamingType.MapRoamingType;
@@ -245,6 +314,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             UnitId = default;
             MessageObjectPool<M2C_UnitLeave>.Return(this);
+        }
+
+        public void CopyTo(ref M2C_UnitLeave other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.UnitId = UnitId;
+
+        }
+
+        public M2C_UnitLeave DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.M2C_UnitLeave; } 
         [ProtoIgnore]
@@ -299,6 +385,26 @@ namespace Fantasy
             UnitType = default;
             MessageObjectPool<UnitInfo>.Return(this);
         }
+
+        public void CopyTo(ref UnitInfo other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.UnitId = UnitId;
+            other.Name = Name;
+            other.Pos = Pos?.DeepCopy();
+            other.UnitType = UnitType;
+
+        }
+
+        public UnitInfo DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         [ProtoMember(1)]
         public long UnitId { get; set; }
         [ProtoMember(2)]
@@ -352,6 +458,23 @@ namespace Fantasy
             }
             MessageObjectPool<C2M_MoveRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2M_MoveRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.TargetPos = TargetPos?.DeepCopy();
+
+        }
+
+        public C2M_MoveRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2M_MoveRequest; } 
         [ProtoIgnore]
         public M2C_MoveResponse ResponseType { get; set; }
@@ -398,6 +521,25 @@ namespace Fantasy
             foreach (var __t in Data) __t.Dispose();
             Data.Clear();
             MessageObjectPool<M2C_MoveResponse>.Return(this);
+        }
+
+        public void CopyTo(ref M2C_MoveResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+            other.Data = new List<Position>(Data.Count);
+            foreach (var __item in Data) other.Data.Add(__item.DeepCopy());
+
+        }
+
+        public M2C_MoveResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.M2C_MoveResponse; } 
         [ProtoMember(2)]
@@ -446,6 +588,25 @@ namespace Fantasy
             Y = default;
             Z = default;
             MessageObjectPool<Position>.Return(this);
+        }
+
+        public void CopyTo(ref Position other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.X = X;
+            other.Y = Y;
+            other.Z = Z;
+
+        }
+
+        public Position DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         [ProtoMember(1)]
         public float X { get; set; }
@@ -500,6 +661,25 @@ namespace Fantasy
             }
             MessageObjectPool<M2C_UnitMoveState>.Return(this);
         }
+
+        public void CopyTo(ref M2C_UnitMoveState other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.State = State;
+            other.UnitId = UnitId;
+            other.Pos = Pos?.DeepCopy();
+
+        }
+
+        public M2C_UnitMoveState DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.M2C_UnitMoveState; } 
         [ProtoIgnore]
         public int RouteType => Fantasy.RoamingType.MapRoamingType;
@@ -546,6 +726,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_TestEmptyMessage>.Return(this);
         }
+
+        public void CopyTo(ref C2G_TestEmptyMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_TestEmptyMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_TestEmptyMessage; } 
     }
     [Serializable]
@@ -584,6 +780,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             Tag = default;
             MessageObjectPool<C2G_TestMessage>.Return(this);
+        }
+
+        public void CopyTo(ref C2G_TestMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2G_TestMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2G_TestMessage; } 
         [ProtoMember(1)]
@@ -626,6 +839,24 @@ namespace Fantasy
             Tag = default;
             Data = null;
             MessageObjectPool<C2G_TestRequest>.Return(this);
+        }
+
+        public void CopyTo(ref C2G_TestRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+            other.Data = Data == null ? null : new List<byte>(Data);
+
+        }
+
+        public C2G_TestRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2G_TestRequest; } 
         [ProtoIgnore]
@@ -675,6 +906,26 @@ namespace Fantasy
             Lists = null;
             MessageObjectPool<G2C_TestResponse>.Return(this);
         }
+
+        public void CopyTo(ref G2C_TestResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+            other.Tag = Tag;
+            other.Data = Data?.Clone() as byte[];
+            other.Lists = Lists == null ? null : new List<int>(Lists);
+
+        }
+
+        public G2C_TestResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.G2C_TestResponse; } 
         [ProtoMember(4)]
         public uint ErrorCode { get; set; }
@@ -721,6 +972,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_TestRequestPushMessage>.Return(this);
         }
+
+        public void CopyTo(ref C2G_TestRequestPushMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_TestRequestPushMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_TestRequestPushMessage; } 
     }
     /// <summary>
@@ -762,6 +1029,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             Tag = default;
             MessageObjectPool<G2C_PushMessage>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_PushMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public G2C_PushMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_PushMessage; } 
         /// <summary>
@@ -806,6 +1090,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_CreateAddressableRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_CreateAddressableRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_CreateAddressableRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_CreateAddressableRequest; } 
         [ProtoIgnore]
         public G2C_CreateAddressableResponse ResponseType { get; set; }
@@ -846,6 +1146,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_CreateAddressableResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_CreateAddressableResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_CreateAddressableResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_CreateAddressableResponse; } 
         [ProtoMember(1)]
@@ -888,6 +1205,23 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<C2M_TestMessage>.Return(this);
         }
+
+        public void CopyTo(ref C2M_TestMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2M_TestMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2M_TestMessage; } 
         [ProtoMember(1)]
         public string Tag { get; set; }
@@ -928,6 +1262,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             Tag = default;
             MessageObjectPool<C2M_TestRequest>.Return(this);
+        }
+
+        public void CopyTo(ref C2M_TestRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2M_TestRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2M_TestRequest; } 
         [ProtoIgnore]
@@ -972,6 +1323,24 @@ namespace Fantasy
             ErrorCode = 0;
             Tag = default;
             MessageObjectPool<M2C_TestResponse>.Return(this);
+        }
+
+        public void CopyTo(ref M2C_TestResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+            other.Tag = Tag;
+
+        }
+
+        public M2C_TestResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.M2C_TestResponse; } 
         [ProtoMember(2)]
@@ -1018,6 +1387,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_CreateChatRouteRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_CreateChatRouteRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_CreateChatRouteRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_CreateChatRouteRequest; } 
         [ProtoIgnore]
         public G2C_CreateChatRouteResponse ResponseType { get; set; }
@@ -1058,6 +1443,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_CreateChatRouteResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_CreateChatRouteResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_CreateChatRouteResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_CreateChatRouteResponse; } 
         [ProtoMember(1)]
@@ -1102,6 +1504,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             Tag = default;
             MessageObjectPool<C2Chat_TestMessage>.Return(this);
+        }
+
+        public void CopyTo(ref C2Chat_TestMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2Chat_TestMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2Chat_TestMessage; } 
         [ProtoIgnore]
@@ -1149,6 +1568,23 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<C2Chat_TestMessageRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2Chat_TestMessageRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2Chat_TestMessageRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2Chat_TestMessageRequest; } 
         [ProtoIgnore]
         public Chat2C_TestMessageResponse ResponseType { get; set; }
@@ -1195,6 +1631,24 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<Chat2C_TestMessageResponse>.Return(this);
         }
+
+        public void CopyTo(ref Chat2C_TestMessageResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+            other.Tag = Tag;
+
+        }
+
+        public Chat2C_TestMessageResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.Chat2C_TestMessageResponse; } 
         [ProtoMember(2)]
         public uint ErrorCode { get; set; }
@@ -1240,6 +1694,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2M_MoveToMapRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2M_MoveToMapRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2M_MoveToMapRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2M_MoveToMapRequest; } 
         [ProtoIgnore]
         public M2C_MoveToMapResponse ResponseType { get; set; }
@@ -1280,6 +1750,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<M2C_MoveToMapResponse>.Return(this);
+        }
+
+        public void CopyTo(ref M2C_MoveToMapResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public M2C_MoveToMapResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.M2C_MoveToMapResponse; } 
         [ProtoMember(1)]
@@ -1325,6 +1812,23 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<C2G_SendAddressableToMap>.Return(this);
         }
+
+        public void CopyTo(ref C2G_SendAddressableToMap other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2G_SendAddressableToMap DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_SendAddressableToMap; } 
         [ProtoMember(1)]
         public string Tag { get; set; }
@@ -1367,6 +1871,22 @@ namespace Fantasy
         {
             if (!IsPool()) return; 
             MessageObjectPool<C2Chat_TestRequestPushMessage>.Return(this);
+        }
+
+        public void CopyTo(ref C2Chat_TestRequestPushMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2Chat_TestRequestPushMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2Chat_TestRequestPushMessage; } 
         [ProtoIgnore]
@@ -1411,6 +1931,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             Tag = default;
             MessageObjectPool<Chat2C_PushMessage>.Return(this);
+        }
+
+        public void CopyTo(ref Chat2C_PushMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public Chat2C_PushMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.Chat2C_PushMessage; } 
         [ProtoIgnore]
@@ -1457,6 +1994,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_CreateSubSceneRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_CreateSubSceneRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_CreateSubSceneRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_CreateSubSceneRequest; } 
         [ProtoIgnore]
         public G2C_CreateSubSceneResponse ResponseType { get; set; }
@@ -1497,6 +2050,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_CreateSubSceneResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_CreateSubSceneResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_CreateSubSceneResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_CreateSubSceneResponse; } 
         [ProtoMember(1)]
@@ -1541,6 +2111,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_SendToSubSceneMessage>.Return(this);
         }
+
+        public void CopyTo(ref C2G_SendToSubSceneMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_SendToSubSceneMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_SendToSubSceneMessage; } 
     }
     /// <summary>
@@ -1582,6 +2168,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_CreateSubSceneAddressableRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_CreateSubSceneAddressableRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_CreateSubSceneAddressableRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_CreateSubSceneAddressableRequest; } 
         [ProtoIgnore]
         public G2C_CreateSubSceneAddressableResponse ResponseType { get; set; }
@@ -1622,6 +2224,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_CreateSubSceneAddressableResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_CreateSubSceneAddressableResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_CreateSubSceneAddressableResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_CreateSubSceneAddressableResponse; } 
         [ProtoMember(1)]
@@ -1667,6 +2286,23 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<C2SubScene_TestMessage>.Return(this);
         }
+
+        public void CopyTo(ref C2SubScene_TestMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2SubScene_TestMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2SubScene_TestMessage; } 
         [ProtoMember(1)]
         public string Tag { get; set; }
@@ -1710,6 +2346,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2SubScene_TestDisposeMessage>.Return(this);
         }
+
+        public void CopyTo(ref C2SubScene_TestDisposeMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2SubScene_TestDisposeMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2SubScene_TestDisposeMessage; } 
     }
     /// <summary>
@@ -1751,6 +2403,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_ConnectRoamingRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_ConnectRoamingRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_ConnectRoamingRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_ConnectRoamingRequest; } 
         [ProtoIgnore]
         public G2C_ConnectRoamingResponse ResponseType { get; set; }
@@ -1791,6 +2459,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_ConnectRoamingResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_ConnectRoamingResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_ConnectRoamingResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_ConnectRoamingResponse; } 
         [ProtoMember(1)]
@@ -1835,6 +2520,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             Tag = default;
             MessageObjectPool<C2Chat_TestRoamingMessage>.Return(this);
+        }
+
+        public void CopyTo(ref C2Chat_TestRoamingMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2Chat_TestRoamingMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2Chat_TestRoamingMessage; } 
         [ProtoIgnore]
@@ -1882,6 +2584,23 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<C2Map_TestRoamingMessage>.Return(this);
         }
+
+        public void CopyTo(ref C2Map_TestRoamingMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2Map_TestRoamingMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2Map_TestRoamingMessage; } 
         [ProtoIgnore]
         public int RouteType => Fantasy.RoamingType.MapRoamingType;
@@ -1928,6 +2647,23 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<C2Chat_TestRPCRoamingRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2Chat_TestRPCRoamingRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2Chat_TestRPCRoamingRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2Chat_TestRPCRoamingRequest; } 
         [ProtoIgnore]
         public Chat2C_TestRPCRoamingResponse ResponseType { get; set; }
@@ -1973,6 +2709,23 @@ namespace Fantasy
             ErrorCode = 0;
             MessageObjectPool<Chat2C_TestRPCRoamingResponse>.Return(this);
         }
+
+        public void CopyTo(ref Chat2C_TestRPCRoamingResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public Chat2C_TestRPCRoamingResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.Chat2C_TestRPCRoamingResponse; } 
         [ProtoMember(1)]
         public uint ErrorCode { get; set; }
@@ -2016,6 +2769,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             Tag = default;
             MessageObjectPool<C2Map_PushMessageToClient>.Return(this);
+        }
+
+        public void CopyTo(ref C2Map_PushMessageToClient other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2Map_PushMessageToClient DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2Map_PushMessageToClient; } 
         [ProtoIgnore]
@@ -2063,6 +2833,23 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<Map2C_PushMessageToClient>.Return(this);
         }
+
+        public void CopyTo(ref Map2C_PushMessageToClient other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public Map2C_PushMessageToClient DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.Map2C_PushMessageToClient; } 
         [ProtoIgnore]
         public int RouteType => Fantasy.RoamingType.MapRoamingType;
@@ -2108,6 +2895,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2Map_TestTransferRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2Map_TestTransferRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2Map_TestTransferRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2Map_TestTransferRequest; } 
         [ProtoIgnore]
         public Map2C_TestTransferResponse ResponseType { get; set; }
@@ -2150,6 +2953,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<Map2C_TestTransferResponse>.Return(this);
+        }
+
+        public void CopyTo(ref Map2C_TestTransferResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public Map2C_TestTransferResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.Map2C_TestTransferResponse; } 
         [ProtoMember(1)]
@@ -2194,6 +3014,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             Tag = default;
             MessageObjectPool<C2Chat_TestSendMapMessage>.Return(this);
+        }
+
+        public void CopyTo(ref C2Chat_TestSendMapMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2Chat_TestSendMapMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2Chat_TestSendMapMessage; } 
         [ProtoIgnore]
@@ -2241,6 +3078,23 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<C2G_TestRouteToRoaming>.Return(this);
         }
+
+        public void CopyTo(ref C2G_TestRouteToRoaming other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2G_TestRouteToRoaming DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_TestRouteToRoaming; } 
         [ProtoMember(1)]
         public string Tag { get; set; }
@@ -2285,6 +3139,23 @@ namespace Fantasy
             Tag = default;
             MessageObjectPool<C2G_TestRoamingToRoaming>.Return(this);
         }
+
+        public void CopyTo(ref C2G_TestRoamingToRoaming other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Tag = Tag;
+
+        }
+
+        public C2G_TestRoamingToRoaming DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_TestRoamingToRoaming; } 
         [ProtoMember(1)]
         public string Tag { get; set; }
@@ -2328,6 +3199,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_LoginRoamingRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_LoginRoamingRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_LoginRoamingRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_LoginRoamingRequest; } 
         [ProtoIgnore]
         public G2C_ConnectRoamingResponse ResponseType { get; set; }
@@ -2368,6 +3255,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_LoginRoamingResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_LoginRoamingResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_LoginRoamingResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_LoginRoamingResponse; } 
         [ProtoMember(1)]
@@ -2412,6 +3316,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_SubscribeSphereEventRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_SubscribeSphereEventRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_SubscribeSphereEventRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_SubscribeSphereEventRequest; } 
         [ProtoIgnore]
         public G2C_SubscribeSphereEventResponse ResponseType { get; set; }
@@ -2452,6 +3372,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_SubscribeSphereEventResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_SubscribeSphereEventResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_SubscribeSphereEventResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_SubscribeSphereEventResponse; } 
         [ProtoMember(1)]
@@ -2496,6 +3433,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_PublishSphereEventRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_PublishSphereEventRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_PublishSphereEventRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_PublishSphereEventRequest; } 
         [ProtoIgnore]
         public G2C_PublishSphereEventResponse ResponseType { get; set; }
@@ -2536,6 +3489,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_PublishSphereEventResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_PublishSphereEventResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_PublishSphereEventResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_PublishSphereEventResponse; } 
         [ProtoMember(1)]
@@ -2580,6 +3550,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_UnsubscribeSphereEventRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_UnsubscribeSphereEventRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_UnsubscribeSphereEventRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_UnsubscribeSphereEventRequest; } 
         [ProtoIgnore]
         public G2C_UnsubscribeSphereEventResponse ResponseType { get; set; }
@@ -2620,6 +3606,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_UnsubscribeSphereEventResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_UnsubscribeSphereEventResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_UnsubscribeSphereEventResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_UnsubscribeSphereEventResponse; } 
         [ProtoMember(1)]
@@ -2664,6 +3667,22 @@ namespace Fantasy
             if (!IsPool()) return; 
             MessageObjectPool<C2G_MapUnsubscribeSphereEventRequest>.Return(this);
         }
+
+        public void CopyTo(ref C2G_MapUnsubscribeSphereEventRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_MapUnsubscribeSphereEventRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         public uint OpCode() { return OuterOpcode.C2G_MapUnsubscribeSphereEventRequest; } 
         [ProtoIgnore]
         public G2C_MapUnsubscribeSphereEventResponse ResponseType { get; set; }
@@ -2704,6 +3723,23 @@ namespace Fantasy
             if (!IsPool()) return; 
             ErrorCode = 0;
             MessageObjectPool<G2C_MapUnsubscribeSphereEventResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_MapUnsubscribeSphereEventResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+
+        }
+
+        public G2C_MapUnsubscribeSphereEventResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_MapUnsubscribeSphereEventResponse; } 
         [ProtoMember(1)]
@@ -2746,6 +3782,23 @@ namespace Fantasy
             Data = null;
             MessageObjectPool<ChatInfoData>.Return(this);
         }
+
+        public void CopyTo(ref ChatInfoData other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Data = Data?.Clone() as byte[];
+
+        }
+
+        public ChatInfoData DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         [ProtoMember(1)]
         public byte[] Data { get; set; }
     }
@@ -2786,6 +3839,23 @@ namespace Fantasy
             A = default;
             MessageObjectPool<TestMemoryPackInfo>.Return(this);
         }
+
+        public void CopyTo(ref TestMemoryPackInfo other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.A = A;
+
+        }
+
+        public TestMemoryPackInfo DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
+        }
         [MemoryPackOrder(1)]
         public string A { get; set; }
     }
@@ -2824,6 +3894,22 @@ namespace Fantasy
         {
             if (!IsPool()) return; 
             MessageObjectPool<C2G_TestMemoryPackRequest>.Return(this);
+        }
+
+        public void CopyTo(ref C2G_TestMemoryPackRequest other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+
+        }
+
+        public C2G_TestMemoryPackRequest DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2G_TestMemoryPackRequest; } 
         [MemoryPackIgnore]
@@ -2870,6 +3956,24 @@ namespace Fantasy
                 Info = null;
             }
             MessageObjectPool<G2C_TestMemoryPackResponse>.Return(this);
+        }
+
+        public void CopyTo(ref G2C_TestMemoryPackResponse other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.ErrorCode = ErrorCode;
+            other.Info = Info?.DeepCopy();
+
+        }
+
+        public G2C_TestMemoryPackResponse DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.G2C_TestMemoryPackResponse; } 
         [MemoryPackOrder(2)]
@@ -2918,6 +4022,25 @@ namespace Fantasy
             Message = default;
             State = default;
             MessageObjectPool<C2G_TestEnumMessage>.Return(this);
+        }
+
+        public void CopyTo(ref C2G_TestEnumMessage other)
+        {
+            if (other == null)
+            {
+                other = Create(false);
+            }
+            other.Code = Code;
+            other.Message = Message;
+            other.State = State;
+
+        }
+
+        public C2G_TestEnumMessage DeepCopy()
+        {
+            var other = Create(false);
+            CopyTo(ref other);
+            return other;
         }
         public uint OpCode() { return OuterOpcode.C2G_TestEnumMessage; } 
         /// <summary>

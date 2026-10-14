@@ -1,8 +1,11 @@
-import { Logger } from './Logger';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.WebSock = void 0;
+const Logger_1 = require("./Logger");
 /**
  * WebSocket 封装（Fantasy Outer 二进制帧）
  */
-export class WebSock {
+class WebSock {
     constructor() {
         this._ws = null;
         this.onConnected = null;
@@ -12,7 +15,7 @@ export class WebSock {
     }
     connect(options) {
         if (this._ws && this._ws.readyState === WebSocket.CONNECTING) {
-            Logger.logNet('websocket connecting, wait for a moment...');
+            Logger_1.Logger.logNet('websocket connecting, wait for a moment...');
             return false;
         }
         let url = options.url ?? null;
@@ -62,4 +65,5 @@ export class WebSock {
         }
     }
 }
+exports.WebSock = WebSock;
 //# sourceMappingURL=WebSock.js.map

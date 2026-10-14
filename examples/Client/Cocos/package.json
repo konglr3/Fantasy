@@ -1,0 +1,14 @@
+{
+  "name": "FantasyCocosExample",
+  "uuid": "7062ff72-328f-403a-99b7-ba850fa0d945",
+  "creator": {
+    "version": "3.8.8"
+  },
+  "dependencies": {
+    "protobufjs": "^7.4.0"
+  },
+  "scripts": {
+    "link:fantasy-cocos": "node ./scripts/link-fantasy-cocos-extension.mjs",
+    "postinstall": "npm run link:fantasy-cocos"
+  }
+}

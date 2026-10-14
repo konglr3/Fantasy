@@ -35,6 +35,9 @@ export declare class NetNodeGame extends NetNode {
      * 简化写法（协议导出 OuterRpc，opcode/req/resp 已绑定）：
      * `callRpc(OuterRpc.C2G_TestRequest, { Tag: 'hi', Data: [1] })`
      */
+    call<T>(def: OuterRpcDef, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
+    call<T>(cmd: number, reqName: string, respName: string, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
+    /** @alias call */
     callRpc<T>(def: OuterRpcDef, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
     callRpc<T>(cmd: number, reqName: string, respName: string, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
     /**

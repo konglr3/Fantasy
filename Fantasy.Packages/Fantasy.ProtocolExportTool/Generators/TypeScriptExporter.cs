@@ -217,8 +217,18 @@ public sealed class TypeScriptExporter(
                 case MessageType.Message:
                 case MessageType.RouteTypeMessage:
                 case MessageType.RoamingMessage:
-                    sendEntries.Add(
-                        $"  {name}: {{ opcode: OuterOpcode.{name}, reqName: '{EscapeTsSingleQuoted(name)}' }}");
+                    if (IsServerToClientMessageName(name))
+                    {
+                        // 服务端→客户端推送（如 G2C_PushMessage）
+                        pushEntries.Add(
+                            $"  {name}: {{ opcode: OuterOpcode.{name}, typeName: '{EscapeTsSingleQuoted(name)}' }}");
+                    }
+                    else
+                    {
+                        sendEntries.Add(
+                            $"  {name}: {{ opcode: OuterOpcode.{name}, reqName: '{EscapeTsSingleQuoted(name)}' }}");
+                    }
+
                     break;
                 case MessageType.Request:
                 case MessageType.RouteTypeRequest:
@@ -234,7 +244,7 @@ public sealed class TypeScriptExporter(
                 case MessageType.Response:
                 case MessageType.RouteTypeResponse:
                 case MessageType.RoamingResponse:
-                    // 服务端推送 / 响应也可按类型名监听
+                    // Response 也可按 opcode 监听
                     pushEntries.Add(
                         $"  {name}: {{ opcode: OuterOpcode.{name}, typeName: '{EscapeTsSingleQuoted(name)}' }}");
                     break;
@@ -511,4 +521,13 @@ public sealed class TypeScriptExporter(
     private static bool HasRouteType(MessageType type) =>
         type is MessageType.RouteTypeMessage or MessageType.RoamingMessage
             or MessageType.RoamingRequest or MessageType.RouteTypeRequest;
+
+    /// <summary>
+    /// 约定：G2C_ / M2C_ / Chat2C_ / Map2C_ 等为服务端→客户端消息，进入 OuterPush。
+    /// </summary>
+    private static bool IsServerToClientMessageName(string name) =>
+        name.StartsWith("G2C_", StringComparison.Ordinal)
+        || name.StartsWith("M2C_", StringComparison.Ordinal)
+        || name.StartsWith("Chat2C_", StringComparison.Ordinal)
+        || name.StartsWith("Map2C_", StringComparison.Ordinal);
 }

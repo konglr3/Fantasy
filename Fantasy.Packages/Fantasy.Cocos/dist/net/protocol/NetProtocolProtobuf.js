@@ -1,6 +1,9 @@
-import { OpCode } from '../../network/OpCode';
-import { encodeOuterFrame, OuterStreamReassembler } from '../../network/OuterStreamReassembler';
-import { IProtocolHelper, } from '../NetInterface';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NetProtocolProtobuf = void 0;
+const OpCode_1 = require("../../network/OpCode");
+const OuterStreamReassembler_1 = require("../../network/OuterStreamReassembler");
+const NetInterface_1 = require("../NetInterface");
 function toUint8Array(msg) {
     if (msg instanceof ArrayBuffer) {
         return new Uint8Array(msg);
@@ -17,10 +20,10 @@ function toUint8Array(msg) {
  * Fantasy Outer 协议编解码（20 字节小端包头 + protobuf body）。
  * 与 Fantasy.Net / Fantasy.Unity Packet 布局一致。
  */
-export class NetProtocolProtobuf extends IProtocolHelper {
+class NetProtocolProtobuf extends NetInterface_1.IProtocolHelper {
     constructor() {
         super(...arguments);
-        this.reassembler = new OuterStreamReassembler();
+        this.reassembler = new OuterStreamReassembler_1.OuterStreamReassembler();
         this.dispatcher = null;
         this.defaultAddress = 0n;
     }
@@ -47,7 +50,7 @@ export class NetProtocolProtobuf extends IProtocolHelper {
             }
             body = this.dispatcher.encodeBody(ireqp.reqName, ireqp.params);
         }
-        ireqp.buffer = encodeOuterFrame({
+        ireqp.buffer = (0, OuterStreamReassembler_1.encodeOuterFrame)({
             rpcId: ireqp.id,
             address,
             protocolCode: ireqp.cmd >>> 0,
@@ -63,7 +66,7 @@ export class NetProtocolProtobuf extends IProtocolHelper {
             }
             body = this.dispatcher.encodeBody(reqName, params);
         }
-        return encodeOuterFrame({
+        return (0, OuterStreamReassembler_1.encodeOuterFrame)({
             rpcId: 0,
             address: address ?? this.defaultAddress,
             protocolCode: cmd >>> 0,
@@ -113,12 +116,13 @@ export class NetProtocolProtobuf extends IProtocolHelper {
         }
     }
     buildHeartbeat() {
-        return encodeOuterFrame({
+        return (0, OuterStreamReassembler_1.encodeOuterFrame)({
             rpcId: 0,
             address: 0n,
-            protocolCode: OpCode.PingRequest,
+            protocolCode: OpCode_1.OpCode.PingRequest,
             body: new Uint8Array(0),
         });
     }
 }
+exports.NetProtocolProtobuf = NetProtocolProtobuf;
 //# sourceMappingURL=NetProtocolProtobuf.js.map

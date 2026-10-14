@@ -1,5 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.IProtocolHelper = void 0;
 /** 协议辅助接口 */
-export class IProtocolHelper {
+class IProtocolHelper {
     constructor() {
         this._requestId = 0;
     }
@@ -34,4 +37,5 @@ export class IProtocolHelper {
     /** @deprecated 使用 buildHeartbeat */
     onHearbeat() { }
 }
+exports.IProtocolHelper = IProtocolHelper;
 //# sourceMappingURL=NetInterface.js.map

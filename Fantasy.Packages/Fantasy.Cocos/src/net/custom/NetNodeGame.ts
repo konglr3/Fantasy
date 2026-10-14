@@ -203,6 +203,35 @@ export class NetNodeGame extends NetNode {
     );
   }
 
+  /** @alias call */
+  public callRpc<T>(
+    def: OuterRpcDef,
+    params?: Record<string, unknown>,
+    address?: bigint
+  ): Promise<WebSocketReturn<T>>;
+  public callRpc<T>(
+    cmd: number,
+    reqName: string,
+    respName: string,
+    params?: Record<string, unknown>,
+    address?: bigint
+  ): Promise<WebSocketReturn<T>>;
+  public callRpc<T>(
+    defOrCmd: number | OuterRpcDef,
+    reqNameOrParams?: string | Record<string, unknown>,
+    respNameOrAddress?: string | bigint,
+    params?: Record<string, unknown>,
+    address: bigint = 0n
+  ): Promise<WebSocketReturn<T>> {
+    return this.call<T>(
+      defOrCmd as never,
+      reqNameOrParams as never,
+      respNameOrAddress as never,
+      params,
+      address
+    );
+  }
+
   /**
    * 监听服务器推送
    *

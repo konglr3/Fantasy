@@ -1,12 +1,15 @@
-import { Scene } from './Scene';
-import { WebSocketSession } from '../network/WebSocketSession';
-export var NetworkProtocolType;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FantasyRuntime = exports.NetworkProtocolType = void 0;
+const Scene_1 = require("./Scene");
+const WebSocketSession_1 = require("../network/WebSocketSession");
+var NetworkProtocolType;
 (function (NetworkProtocolType) {
     NetworkProtocolType[NetworkProtocolType["TCP"] = 0] = "TCP";
     NetworkProtocolType[NetworkProtocolType["KCP"] = 1] = "KCP";
     NetworkProtocolType[NetworkProtocolType["WebSocket"] = 2] = "WebSocket";
-})(NetworkProtocolType || (NetworkProtocolType = {}));
-export class FantasyRuntime {
+})(NetworkProtocolType || (exports.NetworkProtocolType = NetworkProtocolType = {}));
+class FantasyRuntime {
     static get scene() {
         if (!FantasyRuntime._scene) {
             throw new Error('FantasyRuntime.scene is not initialized. Call connect() first.');
@@ -27,8 +30,8 @@ export class FantasyRuntime {
         const path = options.path ?? '/';
         const scheme = options.useTls ? 'wss' : 'ws';
         const url = `${scheme}://${options.remoteHost}:${options.remotePort}${path.startsWith('/') ? path : `/${path}`}`;
-        FantasyRuntime._scene = new Scene();
-        const session = new WebSocketSession();
+        FantasyRuntime._scene = new Scene_1.Scene();
+        const session = new WebSocketSession_1.WebSocketSession();
         const timeout = options.connectTimeoutMs ?? 8000;
         await Promise.race([
             session.connect(url),
@@ -44,6 +47,7 @@ export class FantasyRuntime {
         FantasyRuntime._scene = null;
     }
 }
+exports.FantasyRuntime = FantasyRuntime;
 FantasyRuntime._scene = null;
 FantasyRuntime._session = null;
 //# sourceMappingURL=FantasyRuntime.js.map

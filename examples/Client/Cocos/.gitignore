@@ -1,0 +1,27 @@
+
+#///////////////////////////
+# Cocos Creator 3D Project
+#///////////////////////////
+library/
+temp/
+local/
+build/
+profiles/
+native
+#//////////////////////////
+# NPM
+#//////////////////////////
+node_modules/
+
+# fantasy-cocos 扩展 assets 由 npm run link:fantasy-cocos 从 Fantasy.Cocos/src 镜像（Creator 不支持联接解析 db://）
+extensions/fantasy-cocos/assets/
+
+#//////////////////////////
+# VSCode
+#//////////////////////////
+.vscode/
+
+#//////////////////////////
+# WebStorm
+#//////////////////////////
+.idea/

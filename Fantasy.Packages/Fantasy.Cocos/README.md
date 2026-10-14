@@ -25,7 +25,19 @@ dotnet run --project Fantasy.Packages/Fantasy.ProtocolExportTool -- export -S --
 # 或交互：加 -ts ../Fantasy.Cocos/src/proto
 ```
 
-## 推荐接入（net 层）
+## 推荐接入（Cocos Creator 扩展 / asset-db）
+
+在 Creator 工程的 `extensions/fantasy-cocos` 中挂载本包脚本，再通过 `db://` 引用：
+
+```ts
+import { netChannel, NetConfig } from 'db://fantasy-cocos/index';
+import { ProtoOuterDispatcher } from 'db://fantasy-cocos/protobuf/index';
+```
+
+示例：`examples/Client/Cocos`（`npm run link:fantasy-cocos` 将本包 `src` 镜像到扩展 `assets`）。  
+**注意：** Creator 无法通过 junction/symlink 解析扩展脚本，必须使用真实文件；勿把运行时拷进项目 `assets/scripts`。
+
+## Node / 非 Creator 接入（npm dist）
 
 ```ts
 import protobuf from 'protobufjs';
@@ -45,14 +57,6 @@ NetConfig.gamePath = '/';
 netChannel.gameCreate();
 netChannel.game.setProtoDispatcher(dispatcher);
 netChannel.gameConnect();
-
-netChannel.game.on(OuterOpcode.G2C_PushMessage, 'G2C_PushMessage', (msg) => {
-  console.log('push', msg);
-});
-
-netChannel.game.notify(OuterOpcode.C2G_TestMessage, 'C2G_TestMessage', {
-  Tag: 'hello-from-cocos',
-});
 ```
 
 ## 底层 Session 接入
@@ -65,5 +69,7 @@ netChannel.game.notify(OuterOpcode.C2G_TestMessage, 'C2G_TestMessage', {
 npm install
 npm run build
 ```
+
+> Creator 工程请用扩展挂载 `src`（见上），不要依赖 `node_modules/fantasy-cocos` 的 dist，否则易出现 `Unexpected export statement in CJS module`。
 
 > 当前默认实现 WebSocket。TCP/KCP 可在此基础上扩展 native 通道。

@@ -1,7 +1,11 @@
-import { PacketConstants } from '../packet/PacketConstants';
-import { MaxOuterMessageBodySize } from './ProgramDefine';
-const HEAD = PacketConstants.OuterPacketHeadLength;
-export class OuterStreamReassembler {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.OuterStreamReassembler = void 0;
+exports.encodeOuterFrame = encodeOuterFrame;
+const PacketConstants_1 = require("../packet/PacketConstants");
+const ProgramDefine_1 = require("./ProgramDefine");
+const HEAD = PacketConstants_1.PacketConstants.OuterPacketHeadLength;
+class OuterStreamReassembler {
     constructor() {
         this.buf = new Uint8Array(0);
     }
@@ -22,7 +26,7 @@ export class OuterStreamReassembler {
             const protocolCode = dv.getUint32(4, true);
             const rpcId = dv.getUint32(8, true);
             const address = dv.getBigInt64(12, true);
-            if (packetBodyCount > MaxOuterMessageBodySize) {
+            if (packetBodyCount > ProgramDefine_1.MaxOuterMessageBodySize) {
                 throw new Error(`Outer packet body length exceeds limit: ${packetBodyCount}`);
             }
             if (packetBodyCount === -1) {
@@ -44,10 +48,11 @@ export class OuterStreamReassembler {
         this.buf = new Uint8Array(0);
     }
 }
-export function encodeOuterFrame(params) {
+exports.OuterStreamReassembler = OuterStreamReassembler;
+function encodeOuterFrame(params) {
     const bodyLen = params.body.byteLength;
     const packetBodyCount = bodyLen === 0 ? -1 : bodyLen;
-    if (packetBodyCount > MaxOuterMessageBodySize) {
+    if (packetBodyCount > ProgramDefine_1.MaxOuterMessageBodySize) {
         throw new Error(`Outer packet body length exceeds limit: ${packetBodyCount}`);
     }
     const totalLen = HEAD + (packetBodyCount === -1 ? 0 : bodyLen);

@@ -1,13 +1,16 @@
+"use strict";
 /*
  * @Author: dgflash
  * @Date: 2022-09-01 18:00:28
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-09 18:10:50
  */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NetManager = void 0;
 /*
  * 网络节点管理类
  */
-export class NetManager {
+class NetManager {
     constructor() {
         this._channels = {};
     }
@@ -68,4 +71,5 @@ export class NetManager {
         }
     }
 }
+exports.NetManager = NetManager;
 //# sourceMappingURL=NetManager.js.map

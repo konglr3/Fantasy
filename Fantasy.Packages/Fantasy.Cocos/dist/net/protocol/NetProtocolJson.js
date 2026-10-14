@@ -1,6 +1,9 @@
-import { IProtocolHelper } from '../NetInterface';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NetProtocolJson = void 0;
+const NetInterface_1 = require("../NetInterface");
 /** JSON 数据协议（非 Fantasy Outer，仅作示例保留） */
-export class NetProtocolJson extends IProtocolHelper {
+class NetProtocolJson extends NetInterface_1.IProtocolHelper {
     encode(ireqp) {
         ireqp.id = this.getRequestId();
         const data = {
@@ -21,4 +24,5 @@ export class NetProtocolJson extends IProtocolHelper {
     }
     decodeCustom(_ireqp, _iresp) { }
 }
+exports.NetProtocolJson = NetProtocolJson;
 //# sourceMappingURL=NetProtocolJson.js.map
