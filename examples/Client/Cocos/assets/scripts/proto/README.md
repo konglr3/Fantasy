@@ -44,7 +44,7 @@ npm run build:proto
 | 文件 | 说明 |
 |------|------|
 | `pb/outer_pb.js` | 静态编解码 |
-| `pb/outer_pb.d.ts` | 消息 / 枚举类型（替代原 OuterMessage / OuterEnum） |
+| `pb/outer_pb.d.ts` | 消息 / 枚举类型；`*Response` 已注入 `errorCode` |
 | `pb/index.ts` | `getOuterProtoRoot()` |
 
 ```ts

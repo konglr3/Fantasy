@@ -118,7 +118,11 @@ export class NetNodeGame extends NetNode {
    * 简化写法（协议导出 OuterSend）：
    * `send(OuterSend.C2G_TestMessage, { Tag: 'hi' })`
    */
-  public send(def: OuterSendDef, params?: Record<string, unknown>, address?: bigint): void;
+  public send<TReq = Record<string, unknown>>(
+    def: OuterSendDef<TReq>,
+    params?: TReq,
+    address?: bigint
+  ): void;
   public send(
     cmd: number,
     reqName?: string,
@@ -161,31 +165,31 @@ export class NetNodeGame extends NetNode {
   /**
    * RPC 调用（对齐 Fantasy Session.Call）
    *
-   * 简化写法（协议导出 OuterRpc，opcode/req/resp 已绑定）：
-   * `callRpc(OuterRpc.C2G_TestRequest, { Tag: 'hi', Data: [1] })`
+   * `call(OuterRpc.C2G_ConnectRoamingRequest, {})`
+   * → `Promise<WebSocketReturn<G2C_ConnectRoamingResponse>>`
    */
-  public call<T>(
-    def: OuterRpcDef,
-    params?: Record<string, unknown>,
+  public call<TResp, TReq = Record<string, unknown>>(
+    def: OuterRpcDef<TResp, TReq>,
+    params?: TReq,
     address?: bigint
-  ): Promise<WebSocketReturn<T>>;
-  public call<T>(
+  ): Promise<WebSocketReturn<TResp>>;
+  public call(
     cmd: number,
     reqName: string,
     respName: string,
     params?: Record<string, unknown>,
     address?: bigint
-  ): Promise<WebSocketReturn<T>>;
-  public call<T>(
-    defOrCmd: number | OuterRpcDef,
+  ): Promise<WebSocketReturn<unknown>>;
+  public call(
+    defOrCmd: number | OuterRpcDef<any, any>,
     reqNameOrParams?: string | Record<string, unknown>,
     respNameOrAddress?: string | bigint,
     params?: Record<string, unknown>,
     address: bigint = 0n
-  ): Promise<WebSocketReturn<T>> {
+  ): Promise<WebSocketReturn<any>> {
     if (isOuterRpcDef(defOrCmd)) {
       const def = defOrCmd;
-      return this.req<T>(
+      return this.req(
         def.opcode,
         def.reqName,
         def.respName,
@@ -194,7 +198,7 @@ export class NetNodeGame extends NetNode {
       );
     }
 
-    return this.req<T>(
+    return this.req(
       defOrCmd,
       reqNameOrParams as string,
       respNameOrAddress as string,
@@ -204,26 +208,26 @@ export class NetNodeGame extends NetNode {
   }
 
   /** @alias call */
-  public callRpc<T>(
-    def: OuterRpcDef,
-    params?: Record<string, unknown>,
+  public callRpc<TResp, TReq = Record<string, unknown>>(
+    def: OuterRpcDef<TResp, TReq>,
+    params?: TReq,
     address?: bigint
-  ): Promise<WebSocketReturn<T>>;
-  public callRpc<T>(
+  ): Promise<WebSocketReturn<TResp>>;
+  public callRpc(
     cmd: number,
     reqName: string,
     respName: string,
     params?: Record<string, unknown>,
     address?: bigint
-  ): Promise<WebSocketReturn<T>>;
-  public callRpc<T>(
-    defOrCmd: number | OuterRpcDef,
+  ): Promise<WebSocketReturn<unknown>>;
+  public callRpc(
+    defOrCmd: number | OuterRpcDef<any, any>,
     reqNameOrParams?: string | Record<string, unknown>,
     respNameOrAddress?: string | bigint,
     params?: Record<string, unknown>,
     address: bigint = 0n
-  ): Promise<WebSocketReturn<T>> {
-    return this.call<T>(
+  ): Promise<WebSocketReturn<any>> {
+    return this.call(
       defOrCmd as never,
       reqNameOrParams as never,
       respNameOrAddress as never,
@@ -237,7 +241,11 @@ export class NetNodeGame extends NetNode {
    *
    * 简化写法：`on(OuterPush.G2C_PushMessage, (data) => { ... })`
    */
-  public on(def: OuterPushDef, callback: NetCallFunc, target?: any): void;
+  public on<TData>(
+    def: OuterPushDef<TData>,
+    callback: (data: TData, ...args: any[]) => void,
+    target?: any
+  ): void;
   public on(cmd: number, respName: string, callback: NetCallFunc, target?: any): void;
   public on(
     defOrCmd: number | OuterPushDef,

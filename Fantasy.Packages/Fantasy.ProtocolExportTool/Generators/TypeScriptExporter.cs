@@ -126,6 +126,8 @@ public sealed class TypeScriptExporter(
         var sendEntries = new List<string>();
         var rpcEntries = new List<string>();
         var pushEntries = new List<string>();
+        // 导出具名 type alias（G2C_ConnectRoamingResponse），便于 call 返回类型阅读/提示
+        var aliasNames = new SortedSet<string>(StringComparer.Ordinal);
 
         foreach (var (name, message) in messageDefinitions.OrderBy(x => x.Key, StringComparer.Ordinal))
         {
@@ -141,14 +143,15 @@ public sealed class TypeScriptExporter(
                 case MessageType.RoamingMessage:
                     if (IsServerToClientMessageName(name))
                     {
-                        // 服务端→客户端推送（如 G2C_PushMessage）
+                        aliasNames.Add(name);
                         pushEntries.Add(
-                            $"  {name}: {{ opcode: OuterOpcode.{name}, typeName: '{EscapeTsSingleQuoted(name)}' }}");
+                            $"  {name}: pushDef<{name}>(OuterOpcode.{name}, '{EscapeTsSingleQuoted(name)}')");
                     }
                     else
                     {
+                        aliasNames.Add(name);
                         sendEntries.Add(
-                            $"  {name}: {{ opcode: OuterOpcode.{name}, reqName: '{EscapeTsSingleQuoted(name)}' }}");
+                            $"  {name}: sendDef<{name}>(OuterOpcode.{name}, '{EscapeTsSingleQuoted(name)}')");
                     }
 
                     break;
@@ -160,15 +163,17 @@ public sealed class TypeScriptExporter(
                         break;
                     }
 
+                    aliasNames.Add(name);
+                    aliasNames.Add(message.ResponseType);
                     rpcEntries.Add(
-                        $"  {name}: {{ opcode: OuterOpcode.{name}, reqName: '{EscapeTsSingleQuoted(name)}', respName: '{EscapeTsSingleQuoted(message.ResponseType)}' }}");
+                        $"  {name}: rpcDef<{message.ResponseType}, {name}>(OuterOpcode.{name}, '{EscapeTsSingleQuoted(name)}', '{EscapeTsSingleQuoted(message.ResponseType)}')");
                     break;
                 case MessageType.Response:
                 case MessageType.RouteTypeResponse:
                 case MessageType.RoamingResponse:
-                    // Response 也可按 opcode 监听
+                    aliasNames.Add(name);
                     pushEntries.Add(
-                        $"  {name}: {{ opcode: OuterOpcode.{name}, typeName: '{EscapeTsSingleQuoted(name)}' }}");
+                        $"  {name}: pushDef<{name}>(OuterOpcode.{name}, '{EscapeTsSingleQuoted(name)}')");
                     break;
             }
         }
@@ -181,30 +186,64 @@ public sealed class TypeScriptExporter(
         var sb = new StringBuilder();
         sb.Append(FileHeader);
         sb.AppendLine("import { OuterOpcode } from './OuterOpcode';");
+        sb.AppendLine("import type { OuterPushDef, OuterRpcDef, OuterSendDef } from 'db://fantasy-cocos/net/ProtocolMeta';");
+        sb.AppendLine("import type * as OuterPb from './pb/outer_pb';");
+        sb.AppendLine("import type { Fantasy } from './pb/outer_pb';");
         sb.AppendLine();
-        sb.AppendLine("/** 单向消息绑定（IMessage / Route / Roaming Message） */");
-        sb.AppendLine("export type OuterSendDef = { readonly opcode: number; readonly reqName: string };");
+        sb.AppendLine("export type { OuterPushDef, OuterRpcDef, OuterSendDef };");
         sb.AppendLine();
-        sb.AppendLine("/** RPC 绑定（IRequest ↔ ResponseType） */");
+        // 用 I* 接口（plain object），不要用 class（class 要求 toJSON 等，无法传字面量）
+        sb.AppendLine("/** 无 package → 根 I*；有 package → Fantasy.Network.Message.I* */");
         sb.AppendLine(
-            "export type OuterRpcDef = { readonly opcode: number; readonly reqName: string; readonly respName: string };");
+            "type RootIface<N extends string> = `I${N}` extends keyof OuterPb ? OuterPb[`I${N}` & keyof OuterPb] : never;");
+        sb.AppendLine(
+            "type NestedIface<N extends string> = `I${N}` extends keyof Fantasy.Network.Message ? Fantasy.Network.Message[`I${N}` & keyof Fantasy.Network.Message] : never;");
+        sb.AppendLine(
+            "export type OuterPbMsg<N extends string> = [RootIface<N>] extends [never] ? ([NestedIface<N>] extends [never] ? Record<string, unknown> : NestedIface<N>) : RootIface<N>;");
         sb.AppendLine();
-        sb.AppendLine("/** 推送 / 响应消息绑定（按 opcode 监听） */");
-        sb.AppendLine("export type OuterPushDef = { readonly opcode: number; readonly typeName: string };");
+        sb.AppendLine("/** 具名消息类型 = pbjs I* 接口（可传 { Tag, Data } 字面量） */");
+        foreach (var alias in aliasNames)
+        {
+            if (messageDefinitions.TryGetValue(alias, out var def) && IsInFantasyNetworkMessagePackage(def))
+            {
+                sb.AppendLine($"export type {alias} = Fantasy.Network.Message.I{alias};");
+            }
+            else
+            {
+                sb.AppendLine($"export type {alias} = OuterPbMsg<'{EscapeTsSingleQuoted(alias)}'>;");
+            }
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("function rpcDef<TResp, TReq = Record<string, unknown>>(");
+        sb.AppendLine("  opcode: number,");
+        sb.AppendLine("  reqName: string,");
+        sb.AppendLine("  respName: string");
+        sb.AppendLine("): OuterRpcDef<TResp, TReq> {");
+        sb.AppendLine("  return { opcode, reqName, respName, __resp: undefined as TResp, __req: undefined as TReq };");
+        sb.AppendLine("}");
+        sb.AppendLine();
+        sb.AppendLine("function sendDef<TReq = Record<string, unknown>>(opcode: number, reqName: string): OuterSendDef<TReq> {");
+        sb.AppendLine("  return { opcode, reqName, __req: undefined as TReq };");
+        sb.AppendLine("}");
+        sb.AppendLine();
+        sb.AppendLine("function pushDef<TData = unknown>(opcode: number, typeName: string): OuterPushDef<TData> {");
+        sb.AppendLine("  return { opcode, typeName, __data: undefined as TData };");
+        sb.AppendLine("}");
         sb.AppendLine();
 
         sb.AppendLine("/** send(def, params) 使用 */");
         sb.AppendLine("export const OuterSend = {");
         sb.AppendLine(sendEntries.Count > 0 ? string.Join(",\n", sendEntries) : string.Empty);
-        sb.AppendLine("} as const;");
+        sb.AppendLine("};");
         sb.AppendLine();
         sb.AppendLine("export type OuterSendKey = keyof typeof OuterSend;");
         sb.AppendLine();
 
-        sb.AppendLine("/** callRpc(def, params) 使用：opcode / reqName / respName 已绑定 */");
+        sb.AppendLine("/** call(def, params) → WebSocketReturn<G2C_...>，无需手写泛型 */");
         sb.AppendLine("export const OuterRpc = {");
         sb.AppendLine(rpcEntries.Count > 0 ? string.Join(",\n", rpcEntries) : string.Empty);
-        sb.AppendLine("} as const;");
+        sb.AppendLine("};");
         sb.AppendLine();
         sb.AppendLine("export type OuterRpcKey = keyof typeof OuterRpc;");
         sb.AppendLine();
@@ -212,7 +251,7 @@ public sealed class TypeScriptExporter(
         sb.AppendLine("/** on(def, callback) 使用 */");
         sb.AppendLine("export const OuterPush = {");
         sb.AppendLine(pushEntries.Count > 0 ? string.Join(",\n", pushEntries) : string.Empty);
-        sb.AppendLine("} as const;");
+        sb.AppendLine("};");
         sb.AppendLine();
         sb.AppendLine("export type OuterPushKey = keyof typeof OuterPush;");
         sb.AppendLine();
@@ -318,4 +357,37 @@ public sealed class TypeScriptExporter(
         || name.StartsWith("M2C_", StringComparison.Ordinal)
         || name.StartsWith("Chat2C_", StringComparison.Ordinal)
         || name.StartsWith("Map2C_", StringComparison.Ordinal);
+
+    private static readonly Dictionary<string, bool> PackageCache = new(StringComparer.OrdinalIgnoreCase);
+
+    private static bool IsInFantasyNetworkMessagePackage(MessageDefinition message)
+    {
+        var path = message.SourceFilePath;
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return false;
+        }
+
+        if (PackageCache.TryGetValue(path, out var cached))
+        {
+            return cached;
+        }
+
+        var hit = false;
+        try
+        {
+            if (File.Exists(path))
+            {
+                var text = File.ReadAllText(path);
+                hit = text.Contains("package Fantasy.Network.Message", StringComparison.Ordinal);
+            }
+        }
+        catch
+        {
+            hit = false;
+        }
+
+        PackageCache[path] = hit;
+        return hit;
+    }
 }

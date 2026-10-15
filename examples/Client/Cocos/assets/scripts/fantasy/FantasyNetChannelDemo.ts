@@ -23,18 +23,16 @@ import {
 } from 'db://fantasy-cocos/index';
 import { ProtoOuterDispatcher } from 'db://fantasy-cocos/protobuf/index';
 import { OuterOpcode } from '../proto/OuterOpcode';
-import { OuterPush, OuterRpc, OuterSend } from '../proto/OuterProtocol';
+import {
+  OuterPush,
+  OuterRpc,
+  OuterSend,
+  type G2C_TestResponse,
+} from '../proto/OuterProtocol';
 import { registerOuterProtobufMessages } from '../proto/ProtoOuterDispatcherInit';
 import { getOuterProtoRoot } from '../proto/pb';
-import type { Fantasy } from '../proto/pb/outer_pb';
 
 const { ccclass, property } = _decorator;
-
-/** pbts 消息字段 + 框架 errorCode */
-type WithErrorCode<T> = T & { errorCode?: number };
-type G2C_TestResponse = WithErrorCode<Fantasy.Network.Message.IG2C_TestResponse>;
-type G2C_ConnectRoamingResponse = WithErrorCode<Fantasy.Network.Message.IG2C_ConnectRoamingResponse>;
-type Chat2C_TestRPCRoamingResponse = WithErrorCode<Fantasy.Network.Message.IChat2C_TestRPCRoamingResponse>;
 
 @ccclass('FantasyNetChannelDemo')
 export class FantasyNetChannelDemo extends Component {
@@ -193,17 +191,26 @@ export class FantasyNetChannelDemo extends Component {
 
   /** call：C2G_TestRequest ↔ G2C_TestResponse → C2G_TestRequestHandler */
   public async demoCallTestRequest(): Promise<void> {
-    const ret = await netChannel.game.call<G2C_TestResponse>(OuterRpc.C2G_TestRequest, {
+    const ret = await netChannel.game.call(OuterRpc.C2G_TestRequest, {
       Tag: 'hello-from-cocos-call',
       // Fantasy `repeatedList byte` → 标准 `bytes`（与 LightProto List<byte> 一致）
       Data: Uint8Array.from([1, 2, 3]),
     });
 
-    if (ret.isSucc) {
-      console.log('[NormalMessage] call C2G_TestRequest ok', ret.res);
-    } else {
+    if (!ret.isSucc) {
       console.warn('[NormalMessage] call C2G_TestRequest failed', ret.err);
+      return;
     }
+
+    // G2C_TestResponse = Fantasy.Network.Message.IG2C_TestResponse（plain 接口）
+    const res: G2C_TestResponse | undefined = ret.res;
+    console.log(
+      '[NormalMessage] call C2G_TestRequest ok',
+      `errorCode=${res?.errorCode ?? 0}`,
+      `Tag=${res?.Tag ?? ''}`,
+      `Data=${res?.Data ? Array.from(res.Data).join(',') : ''}`,
+      `Lists=${res?.Lists?.join(',') ?? ''}`
+    );
   }
 
   /**
@@ -240,10 +247,7 @@ export class FantasyNetChannelDemo extends Component {
 
   /** call：C2G_ConnectRoamingRequest ↔ G2C_ConnectRoamingResponse */
   public async demoConnectRoaming(): Promise<boolean> {
-    const ret = await netChannel.game.call<G2C_ConnectRoamingResponse>(
-      OuterRpc.C2G_ConnectRoamingRequest,
-      {}
-    );
+    const ret = await netChannel.game.call(OuterRpc.C2G_ConnectRoamingRequest, {});
 
     if (!ret.isSucc) {
       console.warn('[Roaming/Chat] ConnectRoaming failed', ret.err);
@@ -285,10 +289,9 @@ export class FantasyNetChannelDemo extends Component {
       return;
     }
 
-    const ret = await netChannel.game.call<Chat2C_TestRPCRoamingResponse>(
-      OuterRpc.C2Chat_TestRPCRoamingRequest,
-      { Tag: 'Hi RPCRoaming from Cocos' }
-    );
+    const ret = await netChannel.game.call(OuterRpc.C2Chat_TestRPCRoamingRequest, {
+      Tag: 'Hi RPCRoaming from Cocos',
+    });
 
     if (ret.isSucc) {
       console.log('[Roaming/Chat] call C2Chat_TestRPCRoamingRequest ok', ret.res);

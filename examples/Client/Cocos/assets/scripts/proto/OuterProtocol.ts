@@ -2,93 +2,174 @@
 // 本文件由 Fantasy ProtocolExportTool 自动生成，请勿手动编辑。
 
 import { OuterOpcode } from './OuterOpcode';
+import type { OuterPushDef, OuterRpcDef, OuterSendDef } from 'db://fantasy-cocos/net/ProtocolMeta';
+import type * as OuterPb from './pb/outer_pb';
+import type { Fantasy } from './pb/outer_pb';
 
-/** 单向消息绑定（IMessage / Route / Roaming Message） */
-export type OuterSendDef = { readonly opcode: number; readonly reqName: string };
+export type { OuterPushDef, OuterRpcDef, OuterSendDef };
 
-/** RPC 绑定（IRequest ↔ ResponseType） */
-export type OuterRpcDef = { readonly opcode: number; readonly reqName: string; readonly respName: string };
+/** 无 package → 根 I*；有 package → Fantasy.Network.Message.I* */
+type RootIface<N extends string> = `I${N}` extends keyof OuterPb ? OuterPb[`I${N}` & keyof OuterPb] : never;
+type NestedIface<N extends string> = `I${N}` extends keyof Fantasy.Network.Message ? Fantasy.Network.Message[`I${N}` & keyof Fantasy.Network.Message] : never;
+export type OuterPbMsg<N extends string> = [RootIface<N>] extends [never] ? ([NestedIface<N>] extends [never] ? Record<string, unknown> : NestedIface<N>) : RootIface<N>;
 
-/** 推送 / 响应消息绑定（按 opcode 监听） */
-export type OuterPushDef = { readonly opcode: number; readonly typeName: string };
+/** 具名消息类型 = pbjs I* 接口（可传 { Tag, Data } 字面量） */
+export type C2Chat_TestMessage = Fantasy.Network.Message.IC2Chat_TestMessage;
+export type C2Chat_TestMessageRequest = Fantasy.Network.Message.IC2Chat_TestMessageRequest;
+export type C2Chat_TestRPCRoamingRequest = Fantasy.Network.Message.IC2Chat_TestRPCRoamingRequest;
+export type C2Chat_TestRequestPushMessage = Fantasy.Network.Message.IC2Chat_TestRequestPushMessage;
+export type C2Chat_TestRoamingMessage = Fantasy.Network.Message.IC2Chat_TestRoamingMessage;
+export type C2Chat_TestSendMapMessage = Fantasy.Network.Message.IC2Chat_TestSendMapMessage;
+export type C2G_ConnectRoamingRequest = Fantasy.Network.Message.IC2G_ConnectRoamingRequest;
+export type C2G_CreateAddressableRequest = Fantasy.Network.Message.IC2G_CreateAddressableRequest;
+export type C2G_CreateChatRouteRequest = Fantasy.Network.Message.IC2G_CreateChatRouteRequest;
+export type C2G_CreateSubSceneAddressableRequest = Fantasy.Network.Message.IC2G_CreateSubSceneAddressableRequest;
+export type C2G_CreateSubSceneRequest = Fantasy.Network.Message.IC2G_CreateSubSceneRequest;
+export type C2G_LoginGameRequest = OuterPbMsg<'C2G_LoginGameRequest'>;
+export type C2G_LoginRoamingRequest = Fantasy.Network.Message.IC2G_LoginRoamingRequest;
+export type C2G_MapUnsubscribeSphereEventRequest = Fantasy.Network.Message.IC2G_MapUnsubscribeSphereEventRequest;
+export type C2G_PublishSphereEventRequest = Fantasy.Network.Message.IC2G_PublishSphereEventRequest;
+export type C2G_SendAddressableToMap = Fantasy.Network.Message.IC2G_SendAddressableToMap;
+export type C2G_SendToSubSceneMessage = Fantasy.Network.Message.IC2G_SendToSubSceneMessage;
+export type C2G_SubscribeSphereEventRequest = Fantasy.Network.Message.IC2G_SubscribeSphereEventRequest;
+export type C2G_TestEmptyMessage = Fantasy.Network.Message.IC2G_TestEmptyMessage;
+export type C2G_TestEnumMessage = Fantasy.Network.Message.IC2G_TestEnumMessage;
+export type C2G_TestMemoryPackRequest = Fantasy.Network.Message.IC2G_TestMemoryPackRequest;
+export type C2G_TestMessage = Fantasy.Network.Message.IC2G_TestMessage;
+export type C2G_TestRequest = Fantasy.Network.Message.IC2G_TestRequest;
+export type C2G_TestRequestPushMessage = Fantasy.Network.Message.IC2G_TestRequestPushMessage;
+export type C2G_TestRoamingToRoaming = Fantasy.Network.Message.IC2G_TestRoamingToRoaming;
+export type C2G_TestRouteToRoaming = Fantasy.Network.Message.IC2G_TestRouteToRoaming;
+export type C2G_UnsubscribeSphereEventRequest = Fantasy.Network.Message.IC2G_UnsubscribeSphereEventRequest;
+export type C2M_InitComplete = OuterPbMsg<'C2M_InitComplete'>;
+export type C2M_MoveRequest = OuterPbMsg<'C2M_MoveRequest'>;
+export type C2M_MoveToMapRequest = Fantasy.Network.Message.IC2M_MoveToMapRequest;
+export type C2M_TestMessage = Fantasy.Network.Message.IC2M_TestMessage;
+export type C2M_TestRequest = Fantasy.Network.Message.IC2M_TestRequest;
+export type C2Map_PushMessageToClient = Fantasy.Network.Message.IC2Map_PushMessageToClient;
+export type C2Map_TestRoamingMessage = Fantasy.Network.Message.IC2Map_TestRoamingMessage;
+export type C2Map_TestTransferRequest = Fantasy.Network.Message.IC2Map_TestTransferRequest;
+export type C2SubScene_TestDisposeMessage = Fantasy.Network.Message.IC2SubScene_TestDisposeMessage;
+export type C2SubScene_TestMessage = Fantasy.Network.Message.IC2SubScene_TestMessage;
+export type Chat2C_PushMessage = Fantasy.Network.Message.IChat2C_PushMessage;
+export type Chat2C_TestMessageResponse = Fantasy.Network.Message.IChat2C_TestMessageResponse;
+export type Chat2C_TestRPCRoamingResponse = Fantasy.Network.Message.IChat2C_TestRPCRoamingResponse;
+export type G2C_ConnectRoamingResponse = Fantasy.Network.Message.IG2C_ConnectRoamingResponse;
+export type G2C_CreateAddressableResponse = Fantasy.Network.Message.IG2C_CreateAddressableResponse;
+export type G2C_CreateChatRouteResponse = Fantasy.Network.Message.IG2C_CreateChatRouteResponse;
+export type G2C_CreateSubSceneAddressableResponse = Fantasy.Network.Message.IG2C_CreateSubSceneAddressableResponse;
+export type G2C_CreateSubSceneResponse = Fantasy.Network.Message.IG2C_CreateSubSceneResponse;
+export type G2C_LoginGameResponse = OuterPbMsg<'G2C_LoginGameResponse'>;
+export type G2C_LoginRoamingResponse = Fantasy.Network.Message.IG2C_LoginRoamingResponse;
+export type G2C_MapUnsubscribeSphereEventResponse = Fantasy.Network.Message.IG2C_MapUnsubscribeSphereEventResponse;
+export type G2C_PublishSphereEventResponse = Fantasy.Network.Message.IG2C_PublishSphereEventResponse;
+export type G2C_PushMessage = Fantasy.Network.Message.IG2C_PushMessage;
+export type G2C_SubscribeSphereEventResponse = Fantasy.Network.Message.IG2C_SubscribeSphereEventResponse;
+export type G2C_TestMemoryPackResponse = Fantasy.Network.Message.IG2C_TestMemoryPackResponse;
+export type G2C_TestResponse = Fantasy.Network.Message.IG2C_TestResponse;
+export type G2C_UnsubscribeSphereEventResponse = Fantasy.Network.Message.IG2C_UnsubscribeSphereEventResponse;
+export type M2C_MoveResponse = OuterPbMsg<'M2C_MoveResponse'>;
+export type M2C_MoveToMapResponse = Fantasy.Network.Message.IM2C_MoveToMapResponse;
+export type M2C_TestResponse = Fantasy.Network.Message.IM2C_TestResponse;
+export type M2C_UnitCreate = OuterPbMsg<'M2C_UnitCreate'>;
+export type M2C_UnitLeave = OuterPbMsg<'M2C_UnitLeave'>;
+export type M2C_UnitMoveState = OuterPbMsg<'M2C_UnitMoveState'>;
+export type Map2C_PushMessageToClient = Fantasy.Network.Message.IMap2C_PushMessageToClient;
+export type Map2C_TestTransferResponse = Fantasy.Network.Message.IMap2C_TestTransferResponse;
+
+function rpcDef<TResp, TReq = Record<string, unknown>>(
+  opcode: number,
+  reqName: string,
+  respName: string
+): OuterRpcDef<TResp, TReq> {
+  return { opcode, reqName, respName, __resp: undefined as TResp, __req: undefined as TReq };
+}
+
+function sendDef<TReq = Record<string, unknown>>(opcode: number, reqName: string): OuterSendDef<TReq> {
+  return { opcode, reqName, __req: undefined as TReq };
+}
+
+function pushDef<TData = unknown>(opcode: number, typeName: string): OuterPushDef<TData> {
+  return { opcode, typeName, __data: undefined as TData };
+}
 
 /** send(def, params) 使用 */
 export const OuterSend = {
-  C2Chat_TestMessage: { opcode: OuterOpcode.C2Chat_TestMessage, reqName: 'C2Chat_TestMessage' },
-  C2Chat_TestRequestPushMessage: { opcode: OuterOpcode.C2Chat_TestRequestPushMessage, reqName: 'C2Chat_TestRequestPushMessage' },
-  C2Chat_TestRoamingMessage: { opcode: OuterOpcode.C2Chat_TestRoamingMessage, reqName: 'C2Chat_TestRoamingMessage' },
-  C2Chat_TestSendMapMessage: { opcode: OuterOpcode.C2Chat_TestSendMapMessage, reqName: 'C2Chat_TestSendMapMessage' },
-  C2G_SendAddressableToMap: { opcode: OuterOpcode.C2G_SendAddressableToMap, reqName: 'C2G_SendAddressableToMap' },
-  C2G_SendToSubSceneMessage: { opcode: OuterOpcode.C2G_SendToSubSceneMessage, reqName: 'C2G_SendToSubSceneMessage' },
-  C2G_TestEmptyMessage: { opcode: OuterOpcode.C2G_TestEmptyMessage, reqName: 'C2G_TestEmptyMessage' },
-  C2G_TestEnumMessage: { opcode: OuterOpcode.C2G_TestEnumMessage, reqName: 'C2G_TestEnumMessage' },
-  C2G_TestMessage: { opcode: OuterOpcode.C2G_TestMessage, reqName: 'C2G_TestMessage' },
-  C2G_TestRequestPushMessage: { opcode: OuterOpcode.C2G_TestRequestPushMessage, reqName: 'C2G_TestRequestPushMessage' },
-  C2G_TestRoamingToRoaming: { opcode: OuterOpcode.C2G_TestRoamingToRoaming, reqName: 'C2G_TestRoamingToRoaming' },
-  C2G_TestRouteToRoaming: { opcode: OuterOpcode.C2G_TestRouteToRoaming, reqName: 'C2G_TestRouteToRoaming' },
-  C2M_InitComplete: { opcode: OuterOpcode.C2M_InitComplete, reqName: 'C2M_InitComplete' },
-  C2M_TestMessage: { opcode: OuterOpcode.C2M_TestMessage, reqName: 'C2M_TestMessage' },
-  C2Map_PushMessageToClient: { opcode: OuterOpcode.C2Map_PushMessageToClient, reqName: 'C2Map_PushMessageToClient' },
-  C2Map_TestRoamingMessage: { opcode: OuterOpcode.C2Map_TestRoamingMessage, reqName: 'C2Map_TestRoamingMessage' },
-  C2SubScene_TestDisposeMessage: { opcode: OuterOpcode.C2SubScene_TestDisposeMessage, reqName: 'C2SubScene_TestDisposeMessage' },
-  C2SubScene_TestMessage: { opcode: OuterOpcode.C2SubScene_TestMessage, reqName: 'C2SubScene_TestMessage' }
-} as const;
+  C2Chat_TestMessage: sendDef<C2Chat_TestMessage>(OuterOpcode.C2Chat_TestMessage, 'C2Chat_TestMessage'),
+  C2Chat_TestRequestPushMessage: sendDef<C2Chat_TestRequestPushMessage>(OuterOpcode.C2Chat_TestRequestPushMessage, 'C2Chat_TestRequestPushMessage'),
+  C2Chat_TestRoamingMessage: sendDef<C2Chat_TestRoamingMessage>(OuterOpcode.C2Chat_TestRoamingMessage, 'C2Chat_TestRoamingMessage'),
+  C2Chat_TestSendMapMessage: sendDef<C2Chat_TestSendMapMessage>(OuterOpcode.C2Chat_TestSendMapMessage, 'C2Chat_TestSendMapMessage'),
+  C2G_SendAddressableToMap: sendDef<C2G_SendAddressableToMap>(OuterOpcode.C2G_SendAddressableToMap, 'C2G_SendAddressableToMap'),
+  C2G_SendToSubSceneMessage: sendDef<C2G_SendToSubSceneMessage>(OuterOpcode.C2G_SendToSubSceneMessage, 'C2G_SendToSubSceneMessage'),
+  C2G_TestEmptyMessage: sendDef<C2G_TestEmptyMessage>(OuterOpcode.C2G_TestEmptyMessage, 'C2G_TestEmptyMessage'),
+  C2G_TestEnumMessage: sendDef<C2G_TestEnumMessage>(OuterOpcode.C2G_TestEnumMessage, 'C2G_TestEnumMessage'),
+  C2G_TestMessage: sendDef<C2G_TestMessage>(OuterOpcode.C2G_TestMessage, 'C2G_TestMessage'),
+  C2G_TestRequestPushMessage: sendDef<C2G_TestRequestPushMessage>(OuterOpcode.C2G_TestRequestPushMessage, 'C2G_TestRequestPushMessage'),
+  C2G_TestRoamingToRoaming: sendDef<C2G_TestRoamingToRoaming>(OuterOpcode.C2G_TestRoamingToRoaming, 'C2G_TestRoamingToRoaming'),
+  C2G_TestRouteToRoaming: sendDef<C2G_TestRouteToRoaming>(OuterOpcode.C2G_TestRouteToRoaming, 'C2G_TestRouteToRoaming'),
+  C2M_InitComplete: sendDef<C2M_InitComplete>(OuterOpcode.C2M_InitComplete, 'C2M_InitComplete'),
+  C2M_TestMessage: sendDef<C2M_TestMessage>(OuterOpcode.C2M_TestMessage, 'C2M_TestMessage'),
+  C2Map_PushMessageToClient: sendDef<C2Map_PushMessageToClient>(OuterOpcode.C2Map_PushMessageToClient, 'C2Map_PushMessageToClient'),
+  C2Map_TestRoamingMessage: sendDef<C2Map_TestRoamingMessage>(OuterOpcode.C2Map_TestRoamingMessage, 'C2Map_TestRoamingMessage'),
+  C2SubScene_TestDisposeMessage: sendDef<C2SubScene_TestDisposeMessage>(OuterOpcode.C2SubScene_TestDisposeMessage, 'C2SubScene_TestDisposeMessage'),
+  C2SubScene_TestMessage: sendDef<C2SubScene_TestMessage>(OuterOpcode.C2SubScene_TestMessage, 'C2SubScene_TestMessage')
+};
 
 export type OuterSendKey = keyof typeof OuterSend;
 
-/** callRpc(def, params) 使用：opcode / reqName / respName 已绑定 */
+/** call(def, params) → WebSocketReturn<G2C_...>，无需手写泛型 */
 export const OuterRpc = {
-  C2Chat_TestMessageRequest: { opcode: OuterOpcode.C2Chat_TestMessageRequest, reqName: 'C2Chat_TestMessageRequest', respName: 'Chat2C_TestMessageResponse' },
-  C2Chat_TestRPCRoamingRequest: { opcode: OuterOpcode.C2Chat_TestRPCRoamingRequest, reqName: 'C2Chat_TestRPCRoamingRequest', respName: 'Chat2C_TestRPCRoamingResponse' },
-  C2G_ConnectRoamingRequest: { opcode: OuterOpcode.C2G_ConnectRoamingRequest, reqName: 'C2G_ConnectRoamingRequest', respName: 'G2C_ConnectRoamingResponse' },
-  C2G_CreateAddressableRequest: { opcode: OuterOpcode.C2G_CreateAddressableRequest, reqName: 'C2G_CreateAddressableRequest', respName: 'G2C_CreateAddressableResponse' },
-  C2G_CreateChatRouteRequest: { opcode: OuterOpcode.C2G_CreateChatRouteRequest, reqName: 'C2G_CreateChatRouteRequest', respName: 'G2C_CreateChatRouteResponse' },
-  C2G_CreateSubSceneAddressableRequest: { opcode: OuterOpcode.C2G_CreateSubSceneAddressableRequest, reqName: 'C2G_CreateSubSceneAddressableRequest', respName: 'G2C_CreateSubSceneAddressableResponse' },
-  C2G_CreateSubSceneRequest: { opcode: OuterOpcode.C2G_CreateSubSceneRequest, reqName: 'C2G_CreateSubSceneRequest', respName: 'G2C_CreateSubSceneResponse' },
-  C2G_LoginGameRequest: { opcode: OuterOpcode.C2G_LoginGameRequest, reqName: 'C2G_LoginGameRequest', respName: 'G2C_LoginGameResponse' },
-  C2G_LoginRoamingRequest: { opcode: OuterOpcode.C2G_LoginRoamingRequest, reqName: 'C2G_LoginRoamingRequest', respName: 'G2C_ConnectRoamingResponse' },
-  C2G_MapUnsubscribeSphereEventRequest: { opcode: OuterOpcode.C2G_MapUnsubscribeSphereEventRequest, reqName: 'C2G_MapUnsubscribeSphereEventRequest', respName: 'G2C_MapUnsubscribeSphereEventResponse' },
-  C2G_PublishSphereEventRequest: { opcode: OuterOpcode.C2G_PublishSphereEventRequest, reqName: 'C2G_PublishSphereEventRequest', respName: 'G2C_PublishSphereEventResponse' },
-  C2G_SubscribeSphereEventRequest: { opcode: OuterOpcode.C2G_SubscribeSphereEventRequest, reqName: 'C2G_SubscribeSphereEventRequest', respName: 'G2C_SubscribeSphereEventResponse' },
-  C2G_TestMemoryPackRequest: { opcode: OuterOpcode.C2G_TestMemoryPackRequest, reqName: 'C2G_TestMemoryPackRequest', respName: 'G2C_TestMemoryPackResponse' },
-  C2G_TestRequest: { opcode: OuterOpcode.C2G_TestRequest, reqName: 'C2G_TestRequest', respName: 'G2C_TestResponse' },
-  C2G_UnsubscribeSphereEventRequest: { opcode: OuterOpcode.C2G_UnsubscribeSphereEventRequest, reqName: 'C2G_UnsubscribeSphereEventRequest', respName: 'G2C_UnsubscribeSphereEventResponse' },
-  C2M_MoveRequest: { opcode: OuterOpcode.C2M_MoveRequest, reqName: 'C2M_MoveRequest', respName: 'M2C_MoveResponse' },
-  C2M_MoveToMapRequest: { opcode: OuterOpcode.C2M_MoveToMapRequest, reqName: 'C2M_MoveToMapRequest', respName: 'M2C_MoveToMapResponse' },
-  C2M_TestRequest: { opcode: OuterOpcode.C2M_TestRequest, reqName: 'C2M_TestRequest', respName: 'M2C_TestResponse' },
-  C2Map_TestTransferRequest: { opcode: OuterOpcode.C2Map_TestTransferRequest, reqName: 'C2Map_TestTransferRequest', respName: 'Map2C_TestTransferResponse' }
-} as const;
+  C2Chat_TestMessageRequest: rpcDef<Chat2C_TestMessageResponse, C2Chat_TestMessageRequest>(OuterOpcode.C2Chat_TestMessageRequest, 'C2Chat_TestMessageRequest', 'Chat2C_TestMessageResponse'),
+  C2Chat_TestRPCRoamingRequest: rpcDef<Chat2C_TestRPCRoamingResponse, C2Chat_TestRPCRoamingRequest>(OuterOpcode.C2Chat_TestRPCRoamingRequest, 'C2Chat_TestRPCRoamingRequest', 'Chat2C_TestRPCRoamingResponse'),
+  C2G_ConnectRoamingRequest: rpcDef<G2C_ConnectRoamingResponse, C2G_ConnectRoamingRequest>(OuterOpcode.C2G_ConnectRoamingRequest, 'C2G_ConnectRoamingRequest', 'G2C_ConnectRoamingResponse'),
+  C2G_CreateAddressableRequest: rpcDef<G2C_CreateAddressableResponse, C2G_CreateAddressableRequest>(OuterOpcode.C2G_CreateAddressableRequest, 'C2G_CreateAddressableRequest', 'G2C_CreateAddressableResponse'),
+  C2G_CreateChatRouteRequest: rpcDef<G2C_CreateChatRouteResponse, C2G_CreateChatRouteRequest>(OuterOpcode.C2G_CreateChatRouteRequest, 'C2G_CreateChatRouteRequest', 'G2C_CreateChatRouteResponse'),
+  C2G_CreateSubSceneAddressableRequest: rpcDef<G2C_CreateSubSceneAddressableResponse, C2G_CreateSubSceneAddressableRequest>(OuterOpcode.C2G_CreateSubSceneAddressableRequest, 'C2G_CreateSubSceneAddressableRequest', 'G2C_CreateSubSceneAddressableResponse'),
+  C2G_CreateSubSceneRequest: rpcDef<G2C_CreateSubSceneResponse, C2G_CreateSubSceneRequest>(OuterOpcode.C2G_CreateSubSceneRequest, 'C2G_CreateSubSceneRequest', 'G2C_CreateSubSceneResponse'),
+  C2G_LoginGameRequest: rpcDef<G2C_LoginGameResponse, C2G_LoginGameRequest>(OuterOpcode.C2G_LoginGameRequest, 'C2G_LoginGameRequest', 'G2C_LoginGameResponse'),
+  C2G_LoginRoamingRequest: rpcDef<G2C_ConnectRoamingResponse, C2G_LoginRoamingRequest>(OuterOpcode.C2G_LoginRoamingRequest, 'C2G_LoginRoamingRequest', 'G2C_ConnectRoamingResponse'),
+  C2G_MapUnsubscribeSphereEventRequest: rpcDef<G2C_MapUnsubscribeSphereEventResponse, C2G_MapUnsubscribeSphereEventRequest>(OuterOpcode.C2G_MapUnsubscribeSphereEventRequest, 'C2G_MapUnsubscribeSphereEventRequest', 'G2C_MapUnsubscribeSphereEventResponse'),
+  C2G_PublishSphereEventRequest: rpcDef<G2C_PublishSphereEventResponse, C2G_PublishSphereEventRequest>(OuterOpcode.C2G_PublishSphereEventRequest, 'C2G_PublishSphereEventRequest', 'G2C_PublishSphereEventResponse'),
+  C2G_SubscribeSphereEventRequest: rpcDef<G2C_SubscribeSphereEventResponse, C2G_SubscribeSphereEventRequest>(OuterOpcode.C2G_SubscribeSphereEventRequest, 'C2G_SubscribeSphereEventRequest', 'G2C_SubscribeSphereEventResponse'),
+  C2G_TestMemoryPackRequest: rpcDef<G2C_TestMemoryPackResponse, C2G_TestMemoryPackRequest>(OuterOpcode.C2G_TestMemoryPackRequest, 'C2G_TestMemoryPackRequest', 'G2C_TestMemoryPackResponse'),
+  C2G_TestRequest: rpcDef<G2C_TestResponse, C2G_TestRequest>(OuterOpcode.C2G_TestRequest, 'C2G_TestRequest', 'G2C_TestResponse'),
+  C2G_UnsubscribeSphereEventRequest: rpcDef<G2C_UnsubscribeSphereEventResponse, C2G_UnsubscribeSphereEventRequest>(OuterOpcode.C2G_UnsubscribeSphereEventRequest, 'C2G_UnsubscribeSphereEventRequest', 'G2C_UnsubscribeSphereEventResponse'),
+  C2M_MoveRequest: rpcDef<M2C_MoveResponse, C2M_MoveRequest>(OuterOpcode.C2M_MoveRequest, 'C2M_MoveRequest', 'M2C_MoveResponse'),
+  C2M_MoveToMapRequest: rpcDef<M2C_MoveToMapResponse, C2M_MoveToMapRequest>(OuterOpcode.C2M_MoveToMapRequest, 'C2M_MoveToMapRequest', 'M2C_MoveToMapResponse'),
+  C2M_TestRequest: rpcDef<M2C_TestResponse, C2M_TestRequest>(OuterOpcode.C2M_TestRequest, 'C2M_TestRequest', 'M2C_TestResponse'),
+  C2Map_TestTransferRequest: rpcDef<Map2C_TestTransferResponse, C2Map_TestTransferRequest>(OuterOpcode.C2Map_TestTransferRequest, 'C2Map_TestTransferRequest', 'Map2C_TestTransferResponse')
+};
 
 export type OuterRpcKey = keyof typeof OuterRpc;
 
 /** on(def, callback) 使用 */
 export const OuterPush = {
-  Chat2C_PushMessage: { opcode: OuterOpcode.Chat2C_PushMessage, typeName: 'Chat2C_PushMessage' },
-  Chat2C_TestMessageResponse: { opcode: OuterOpcode.Chat2C_TestMessageResponse, typeName: 'Chat2C_TestMessageResponse' },
-  Chat2C_TestRPCRoamingResponse: { opcode: OuterOpcode.Chat2C_TestRPCRoamingResponse, typeName: 'Chat2C_TestRPCRoamingResponse' },
-  G2C_ConnectRoamingResponse: { opcode: OuterOpcode.G2C_ConnectRoamingResponse, typeName: 'G2C_ConnectRoamingResponse' },
-  G2C_CreateAddressableResponse: { opcode: OuterOpcode.G2C_CreateAddressableResponse, typeName: 'G2C_CreateAddressableResponse' },
-  G2C_CreateChatRouteResponse: { opcode: OuterOpcode.G2C_CreateChatRouteResponse, typeName: 'G2C_CreateChatRouteResponse' },
-  G2C_CreateSubSceneAddressableResponse: { opcode: OuterOpcode.G2C_CreateSubSceneAddressableResponse, typeName: 'G2C_CreateSubSceneAddressableResponse' },
-  G2C_CreateSubSceneResponse: { opcode: OuterOpcode.G2C_CreateSubSceneResponse, typeName: 'G2C_CreateSubSceneResponse' },
-  G2C_LoginGameResponse: { opcode: OuterOpcode.G2C_LoginGameResponse, typeName: 'G2C_LoginGameResponse' },
-  G2C_LoginRoamingResponse: { opcode: OuterOpcode.G2C_LoginRoamingResponse, typeName: 'G2C_LoginRoamingResponse' },
-  G2C_MapUnsubscribeSphereEventResponse: { opcode: OuterOpcode.G2C_MapUnsubscribeSphereEventResponse, typeName: 'G2C_MapUnsubscribeSphereEventResponse' },
-  G2C_PublishSphereEventResponse: { opcode: OuterOpcode.G2C_PublishSphereEventResponse, typeName: 'G2C_PublishSphereEventResponse' },
-  G2C_PushMessage: { opcode: OuterOpcode.G2C_PushMessage, typeName: 'G2C_PushMessage' },
-  G2C_SubscribeSphereEventResponse: { opcode: OuterOpcode.G2C_SubscribeSphereEventResponse, typeName: 'G2C_SubscribeSphereEventResponse' },
-  G2C_TestMemoryPackResponse: { opcode: OuterOpcode.G2C_TestMemoryPackResponse, typeName: 'G2C_TestMemoryPackResponse' },
-  G2C_TestResponse: { opcode: OuterOpcode.G2C_TestResponse, typeName: 'G2C_TestResponse' },
-  G2C_UnsubscribeSphereEventResponse: { opcode: OuterOpcode.G2C_UnsubscribeSphereEventResponse, typeName: 'G2C_UnsubscribeSphereEventResponse' },
-  M2C_MoveResponse: { opcode: OuterOpcode.M2C_MoveResponse, typeName: 'M2C_MoveResponse' },
-  M2C_MoveToMapResponse: { opcode: OuterOpcode.M2C_MoveToMapResponse, typeName: 'M2C_MoveToMapResponse' },
-  M2C_TestResponse: { opcode: OuterOpcode.M2C_TestResponse, typeName: 'M2C_TestResponse' },
-  M2C_UnitCreate: { opcode: OuterOpcode.M2C_UnitCreate, typeName: 'M2C_UnitCreate' },
-  M2C_UnitLeave: { opcode: OuterOpcode.M2C_UnitLeave, typeName: 'M2C_UnitLeave' },
-  M2C_UnitMoveState: { opcode: OuterOpcode.M2C_UnitMoveState, typeName: 'M2C_UnitMoveState' },
-  Map2C_PushMessageToClient: { opcode: OuterOpcode.Map2C_PushMessageToClient, typeName: 'Map2C_PushMessageToClient' },
-  Map2C_TestTransferResponse: { opcode: OuterOpcode.Map2C_TestTransferResponse, typeName: 'Map2C_TestTransferResponse' }
-} as const;
+  Chat2C_PushMessage: pushDef<Chat2C_PushMessage>(OuterOpcode.Chat2C_PushMessage, 'Chat2C_PushMessage'),
+  Chat2C_TestMessageResponse: pushDef<Chat2C_TestMessageResponse>(OuterOpcode.Chat2C_TestMessageResponse, 'Chat2C_TestMessageResponse'),
+  Chat2C_TestRPCRoamingResponse: pushDef<Chat2C_TestRPCRoamingResponse>(OuterOpcode.Chat2C_TestRPCRoamingResponse, 'Chat2C_TestRPCRoamingResponse'),
+  G2C_ConnectRoamingResponse: pushDef<G2C_ConnectRoamingResponse>(OuterOpcode.G2C_ConnectRoamingResponse, 'G2C_ConnectRoamingResponse'),
+  G2C_CreateAddressableResponse: pushDef<G2C_CreateAddressableResponse>(OuterOpcode.G2C_CreateAddressableResponse, 'G2C_CreateAddressableResponse'),
+  G2C_CreateChatRouteResponse: pushDef<G2C_CreateChatRouteResponse>(OuterOpcode.G2C_CreateChatRouteResponse, 'G2C_CreateChatRouteResponse'),
+  G2C_CreateSubSceneAddressableResponse: pushDef<G2C_CreateSubSceneAddressableResponse>(OuterOpcode.G2C_CreateSubSceneAddressableResponse, 'G2C_CreateSubSceneAddressableResponse'),
+  G2C_CreateSubSceneResponse: pushDef<G2C_CreateSubSceneResponse>(OuterOpcode.G2C_CreateSubSceneResponse, 'G2C_CreateSubSceneResponse'),
+  G2C_LoginGameResponse: pushDef<G2C_LoginGameResponse>(OuterOpcode.G2C_LoginGameResponse, 'G2C_LoginGameResponse'),
+  G2C_LoginRoamingResponse: pushDef<G2C_LoginRoamingResponse>(OuterOpcode.G2C_LoginRoamingResponse, 'G2C_LoginRoamingResponse'),
+  G2C_MapUnsubscribeSphereEventResponse: pushDef<G2C_MapUnsubscribeSphereEventResponse>(OuterOpcode.G2C_MapUnsubscribeSphereEventResponse, 'G2C_MapUnsubscribeSphereEventResponse'),
+  G2C_PublishSphereEventResponse: pushDef<G2C_PublishSphereEventResponse>(OuterOpcode.G2C_PublishSphereEventResponse, 'G2C_PublishSphereEventResponse'),
+  G2C_PushMessage: pushDef<G2C_PushMessage>(OuterOpcode.G2C_PushMessage, 'G2C_PushMessage'),
+  G2C_SubscribeSphereEventResponse: pushDef<G2C_SubscribeSphereEventResponse>(OuterOpcode.G2C_SubscribeSphereEventResponse, 'G2C_SubscribeSphereEventResponse'),
+  G2C_TestMemoryPackResponse: pushDef<G2C_TestMemoryPackResponse>(OuterOpcode.G2C_TestMemoryPackResponse, 'G2C_TestMemoryPackResponse'),
+  G2C_TestResponse: pushDef<G2C_TestResponse>(OuterOpcode.G2C_TestResponse, 'G2C_TestResponse'),
+  G2C_UnsubscribeSphereEventResponse: pushDef<G2C_UnsubscribeSphereEventResponse>(OuterOpcode.G2C_UnsubscribeSphereEventResponse, 'G2C_UnsubscribeSphereEventResponse'),
+  M2C_MoveResponse: pushDef<M2C_MoveResponse>(OuterOpcode.M2C_MoveResponse, 'M2C_MoveResponse'),
+  M2C_MoveToMapResponse: pushDef<M2C_MoveToMapResponse>(OuterOpcode.M2C_MoveToMapResponse, 'M2C_MoveToMapResponse'),
+  M2C_TestResponse: pushDef<M2C_TestResponse>(OuterOpcode.M2C_TestResponse, 'M2C_TestResponse'),
+  M2C_UnitCreate: pushDef<M2C_UnitCreate>(OuterOpcode.M2C_UnitCreate, 'M2C_UnitCreate'),
+  M2C_UnitLeave: pushDef<M2C_UnitLeave>(OuterOpcode.M2C_UnitLeave, 'M2C_UnitLeave'),
+  M2C_UnitMoveState: pushDef<M2C_UnitMoveState>(OuterOpcode.M2C_UnitMoveState, 'M2C_UnitMoveState'),
+  Map2C_PushMessageToClient: pushDef<Map2C_PushMessageToClient>(OuterOpcode.Map2C_PushMessageToClient, 'Map2C_PushMessageToClient'),
+  Map2C_TestTransferResponse: pushDef<Map2C_TestTransferResponse>(OuterOpcode.Map2C_TestTransferResponse, 'Map2C_TestTransferResponse')
+};
 
 export type OuterPushKey = keyof typeof OuterPush;
 

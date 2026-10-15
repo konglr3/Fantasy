@@ -40,6 +40,60 @@ function resolveBin(name) {
   return require.resolve(`protobufjs-cli/bin/${name}`);
 }
 
+/**
+ * pbts 默认不 export 嵌套 namespace/class，导致 OuterPbMsg 的 keyof 解析失败、
+ * 类型退化成 Record。补上 export 以便 Fantasy.Network.Message.G2C_* 可被索引。
+ */
+function exportNestedProtoTypes(dts) {
+  let out = dts;
+  // pbts 在 `{` 与 `namespace` 之间会插注释，不能只匹配紧邻换行
+  out = out.replace(/^([ \t]*)namespace Network \{/m, '$1export namespace Network {');
+  out = out.replace(/^([ \t]*)namespace Message \{/m, '$1export namespace Message {');
+  // Message 内成员补 export（避免重复）
+  out = out.replace(
+    /^([ \t]{12,})(?!export )(interface|class|enum) /gm,
+    '$1export $2 '
+  );
+  return out;
+}
+
+/**
+ * 给 pbts 生成的 I*Response / *Response 补上 Fantasy 框架 errorCode。
+ * （.proto 通常不写该字段，由服务端 IResponse 注入）
+ */
+function injectFantasyResponseErrorCode(dts) {
+  let out = dts;
+
+  // interface / export interface IFooResponse { ... }
+  out = out.replace(
+    /^([ \t]*)(export )?interface (I\w+Response) \{([^}]*)\}/gm,
+    (full, lineIndent, exportKw, name, body) => {
+      if (/\berrorCode\b/.test(body)) {
+        return full;
+      }
+      const fieldIndent = `${lineIndent}    `;
+      // 去掉仅缩进的尾行（原 `}` 前空白），避免 `}` 错位
+      let rest = body.replace(/^\r?\n/, '').replace(/(?:^|\n)[ \t]*$/, '');
+      if (rest.length > 0 && !rest.endsWith('\n')) {
+        rest += '\n';
+      }
+      const exp = exportKw || '';
+      return `${lineIndent}${exp}interface ${name} {\n${fieldIndent}/** Fantasy IResponse 框架错误码 */\n${fieldIndent}errorCode?: (number|null);\n${rest}${lineIndent}}`;
+    }
+  );
+
+  // class / export class FooResponse implements ...IFooResponse {
+  out = out.replace(
+    /^([ \t]*)(export )?class (\w+Response) implements (?:[\w.]+\.)?(I\3) \{/gm,
+    (full, lineIndent) => {
+      const fieldIndent = `${lineIndent}    `;
+      return `${full}\n${fieldIndent}/** Fantasy IResponse 框架错误码 */\n${fieldIndent}public errorCode: number;\n`;
+    }
+  );
+
+  return out;
+}
+
 if (!existsSync(outerSrcDir)) {
   console.error('[build:proto] Outer proto dir not found:', outerSrcDir);
   process.exit(1);
@@ -91,6 +145,21 @@ execFileSync(
 );
 
 execFileSync(process.execPath, [pbts, '-o', dtsOut, jsOut], { stdio: 'inherit' });
+
+{
+  let dts = readFileSync(dtsOut, 'utf8');
+  const beforeExport = dts;
+  dts = exportNestedProtoTypes(dts);
+  if (dts !== beforeExport) {
+    console.log('[build:proto] exported Fantasy.Network.Message nested types');
+  }
+  const beforeErr = dts;
+  dts = injectFantasyResponseErrorCode(dts);
+  if (dts !== beforeErr) {
+    console.log('[build:proto] injected errorCode into *Response types');
+  }
+  writeFileSync(dtsOut, dts, 'utf8');
+}
 
 // Creator 脚本为 ESM：用 import 加载 commonjs 静态模块（不要用 require）
 writeFileSync(

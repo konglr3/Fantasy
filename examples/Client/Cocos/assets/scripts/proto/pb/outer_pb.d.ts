@@ -99,10 +99,15 @@ export class C2G_LoginGameRequest implements IC2G_LoginGameRequest {
 
 /** Properties of a G2C_LoginGameResponse. */
 export interface IG2C_LoginGameResponse {
+    /** Fantasy IResponse 框架错误码 */
+    errorCode?: (number|null);
 }
 
 /** Represents a G2C_LoginGameResponse. */
 export class G2C_LoginGameResponse implements IG2C_LoginGameResponse {
+    /** Fantasy IResponse 框架错误码 */
+    public errorCode: number;
+
 
     /**
      * Constructs a new G2C_LoginGameResponse.
@@ -693,6 +698,8 @@ export class C2M_MoveRequest implements IC2M_MoveRequest {
 
 /** Properties of a M2C_MoveResponse. */
 export interface IM2C_MoveResponse {
+    /** Fantasy IResponse 框架错误码 */
+    errorCode?: (number|null);
 
     /** M2C_MoveResponse Data */
     Data?: (IPosition[]|null);
@@ -700,6 +707,9 @@ export interface IM2C_MoveResponse {
 
 /** Represents a M2C_MoveResponse. */
 export class M2C_MoveResponse implements IM2C_MoveResponse {
+    /** Fantasy IResponse 框架错误码 */
+    public errorCode: number;
+
 
     /**
      * Constructs a new M2C_MoveResponse.
@@ -1010,17 +1020,17 @@ export class M2C_UnitMoveState implements IM2C_UnitMoveState {
 export namespace Fantasy {
 
     /** Namespace Network. */
-    namespace Network {
+    export namespace Network {
 
         /** Namespace Message. */
-        namespace Message {
+        export namespace Message {
 
             /** Properties of a C2G_TestEmptyMessage. */
-            interface IC2G_TestEmptyMessage {
+            export interface IC2G_TestEmptyMessage {
             }
 
             /** Represents a C2G_TestEmptyMessage. */
-            class C2G_TestEmptyMessage implements IC2G_TestEmptyMessage {
+            export class C2G_TestEmptyMessage implements IC2G_TestEmptyMessage {
 
                 /**
                  * Constructs a new C2G_TestEmptyMessage.
@@ -1107,14 +1117,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_TestMessage. */
-            interface IC2G_TestMessage {
+            export interface IC2G_TestMessage {
 
                 /** C2G_TestMessage Tag */
                 Tag?: (string|null);
             }
 
             /** Represents a C2G_TestMessage. */
-            class C2G_TestMessage implements IC2G_TestMessage {
+            export class C2G_TestMessage implements IC2G_TestMessage {
 
                 /**
                  * Constructs a new C2G_TestMessage.
@@ -1204,7 +1214,7 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_TestRequest. */
-            interface IC2G_TestRequest {
+            export interface IC2G_TestRequest {
 
                 /** C2G_TestRequest Tag */
                 Tag?: (string|null);
@@ -1214,7 +1224,7 @@ export namespace Fantasy {
             }
 
             /** Represents a C2G_TestRequest. */
-            class C2G_TestRequest implements IC2G_TestRequest {
+            export class C2G_TestRequest implements IC2G_TestRequest {
 
                 /**
                  * Constructs a new C2G_TestRequest.
@@ -1307,7 +1317,9 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_TestResponse. */
-            interface IG2C_TestResponse {
+            export interface IG2C_TestResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
 
                 /** G2C_TestResponse Tag */
                 Tag?: (string|null);
@@ -1320,7 +1332,10 @@ export namespace Fantasy {
             }
 
             /** Represents a G2C_TestResponse. */
-            class G2C_TestResponse implements IG2C_TestResponse {
+            export class G2C_TestResponse implements IG2C_TestResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_TestResponse.
@@ -1416,11 +1431,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_TestRequestPushMessage. */
-            interface IC2G_TestRequestPushMessage {
+            export interface IC2G_TestRequestPushMessage {
             }
 
             /** Represents a C2G_TestRequestPushMessage. */
-            class C2G_TestRequestPushMessage implements IC2G_TestRequestPushMessage {
+            export class C2G_TestRequestPushMessage implements IC2G_TestRequestPushMessage {
 
                 /**
                  * Constructs a new C2G_TestRequestPushMessage.
@@ -1507,14 +1522,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_PushMessage. */
-            interface IG2C_PushMessage {
+            export interface IG2C_PushMessage {
 
                 /** 标记 */
                 Tag?: (string|null);
             }
 
             /** Gate服务器推送一个消息给客户端 */
-            class G2C_PushMessage implements IG2C_PushMessage {
+            export class G2C_PushMessage implements IG2C_PushMessage {
 
                 /**
                  * Constructs a new G2C_PushMessage.
@@ -1604,11 +1619,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_CreateAddressableRequest. */
-            interface IC2G_CreateAddressableRequest {
+            export interface IC2G_CreateAddressableRequest {
             }
 
             /** Represents a C2G_CreateAddressableRequest. */
-            class C2G_CreateAddressableRequest implements IC2G_CreateAddressableRequest {
+            export class C2G_CreateAddressableRequest implements IC2G_CreateAddressableRequest {
 
                 /**
                  * Constructs a new C2G_CreateAddressableRequest.
@@ -1695,11 +1710,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_CreateAddressableResponse. */
-            interface IG2C_CreateAddressableResponse {
+            export interface IG2C_CreateAddressableResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_CreateAddressableResponse. */
-            class G2C_CreateAddressableResponse implements IG2C_CreateAddressableResponse {
+            export class G2C_CreateAddressableResponse implements IG2C_CreateAddressableResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_CreateAddressableResponse.
@@ -1786,14 +1806,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2M_TestMessage. */
-            interface IC2M_TestMessage {
+            export interface IC2M_TestMessage {
 
                 /** C2M_TestMessage Tag */
                 Tag?: (string|null);
             }
 
             /** Represents a C2M_TestMessage. */
-            class C2M_TestMessage implements IC2M_TestMessage {
+            export class C2M_TestMessage implements IC2M_TestMessage {
 
                 /**
                  * Constructs a new C2M_TestMessage.
@@ -1883,14 +1903,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2M_TestRequest. */
-            interface IC2M_TestRequest {
+            export interface IC2M_TestRequest {
 
                 /** C2M_TestRequest Tag */
                 Tag?: (string|null);
             }
 
             /** Represents a C2M_TestRequest. */
-            class C2M_TestRequest implements IC2M_TestRequest {
+            export class C2M_TestRequest implements IC2M_TestRequest {
 
                 /**
                  * Constructs a new C2M_TestRequest.
@@ -1980,14 +2000,19 @@ export namespace Fantasy {
             }
 
             /** Properties of a M2C_TestResponse. */
-            interface IM2C_TestResponse {
+            export interface IM2C_TestResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
 
                 /** M2C_TestResponse Tag */
                 Tag?: (string|null);
             }
 
             /** Represents a M2C_TestResponse. */
-            class M2C_TestResponse implements IM2C_TestResponse {
+            export class M2C_TestResponse implements IM2C_TestResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new M2C_TestResponse.
@@ -2077,11 +2102,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_CreateChatRouteRequest. */
-            interface IC2G_CreateChatRouteRequest {
+            export interface IC2G_CreateChatRouteRequest {
             }
 
             /** 通知Gate服务器创建一个Chat的Route连接 */
-            class C2G_CreateChatRouteRequest implements IC2G_CreateChatRouteRequest {
+            export class C2G_CreateChatRouteRequest implements IC2G_CreateChatRouteRequest {
 
                 /**
                  * Constructs a new C2G_CreateChatRouteRequest.
@@ -2168,11 +2193,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_CreateChatRouteResponse. */
-            interface IG2C_CreateChatRouteResponse {
+            export interface IG2C_CreateChatRouteResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_CreateChatRouteResponse. */
-            class G2C_CreateChatRouteResponse implements IG2C_CreateChatRouteResponse {
+            export class G2C_CreateChatRouteResponse implements IG2C_CreateChatRouteResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_CreateChatRouteResponse.
@@ -2259,14 +2289,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2Chat_TestMessage. */
-            interface IC2Chat_TestMessage {
+            export interface IC2Chat_TestMessage {
 
                 /** C2Chat_TestMessage Tag */
                 Tag?: (string|null);
             }
 
             /** 发送一个Route消息给Chat */
-            class C2Chat_TestMessage implements IC2Chat_TestMessage {
+            export class C2Chat_TestMessage implements IC2Chat_TestMessage {
 
                 /**
                  * Constructs a new C2Chat_TestMessage.
@@ -2356,14 +2386,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2Chat_TestMessageRequest. */
-            interface IC2Chat_TestMessageRequest {
+            export interface IC2Chat_TestMessageRequest {
 
                 /** C2Chat_TestMessageRequest Tag */
                 Tag?: (string|null);
             }
 
             /** 发送一个RPCRoute消息给Chat */
-            class C2Chat_TestMessageRequest implements IC2Chat_TestMessageRequest {
+            export class C2Chat_TestMessageRequest implements IC2Chat_TestMessageRequest {
 
                 /**
                  * Constructs a new C2Chat_TestMessageRequest.
@@ -2453,14 +2483,19 @@ export namespace Fantasy {
             }
 
             /** Properties of a Chat2C_TestMessageResponse. */
-            interface IChat2C_TestMessageResponse {
+            export interface IChat2C_TestMessageResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
 
                 /** Chat2C_TestMessageResponse Tag */
                 Tag?: (string|null);
             }
 
             /** Represents a Chat2C_TestMessageResponse. */
-            class Chat2C_TestMessageResponse implements IChat2C_TestMessageResponse {
+            export class Chat2C_TestMessageResponse implements IChat2C_TestMessageResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new Chat2C_TestMessageResponse.
@@ -2550,11 +2585,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2M_MoveToMapRequest. */
-            interface IC2M_MoveToMapRequest {
+            export interface IC2M_MoveToMapRequest {
             }
 
             /** 发送一个RPC消息给Map，让Map里的Entity转移到另外一个Map上 */
-            class C2M_MoveToMapRequest implements IC2M_MoveToMapRequest {
+            export class C2M_MoveToMapRequest implements IC2M_MoveToMapRequest {
 
                 /**
                  * Constructs a new C2M_MoveToMapRequest.
@@ -2641,11 +2676,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a M2C_MoveToMapResponse. */
-            interface IM2C_MoveToMapResponse {
+            export interface IM2C_MoveToMapResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a M2C_MoveToMapResponse. */
-            class M2C_MoveToMapResponse implements IM2C_MoveToMapResponse {
+            export class M2C_MoveToMapResponse implements IM2C_MoveToMapResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new M2C_MoveToMapResponse.
@@ -2732,14 +2772,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_SendAddressableToMap. */
-            interface IC2G_SendAddressableToMap {
+            export interface IC2G_SendAddressableToMap {
 
                 /** C2G_SendAddressableToMap Tag */
                 Tag?: (string|null);
             }
 
             /** 发送一个消息给Gate，让Gate发送一个Addressable消息给MAP */
-            class C2G_SendAddressableToMap implements IC2G_SendAddressableToMap {
+            export class C2G_SendAddressableToMap implements IC2G_SendAddressableToMap {
 
                 /**
                  * Constructs a new C2G_SendAddressableToMap.
@@ -2829,11 +2869,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2Chat_TestRequestPushMessage. */
-            interface IC2Chat_TestRequestPushMessage {
+            export interface IC2Chat_TestRequestPushMessage {
             }
 
             /** 发送一个消息给Chat，让Chat服务器主动推送一个RouteMessage消息给客户端 */
-            class C2Chat_TestRequestPushMessage implements IC2Chat_TestRequestPushMessage {
+            export class C2Chat_TestRequestPushMessage implements IC2Chat_TestRequestPushMessage {
 
                 /**
                  * Constructs a new C2Chat_TestRequestPushMessage.
@@ -2920,14 +2960,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a Chat2C_PushMessage. */
-            interface IChat2C_PushMessage {
+            export interface IChat2C_PushMessage {
 
                 /** Chat2C_PushMessage Tag */
                 Tag?: (string|null);
             }
 
             /** Chat服务器主动推送一个消息给客户端 */
-            class Chat2C_PushMessage implements IChat2C_PushMessage {
+            export class Chat2C_PushMessage implements IChat2C_PushMessage {
 
                 /**
                  * Constructs a new Chat2C_PushMessage.
@@ -3017,11 +3057,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_CreateSubSceneRequest. */
-            interface IC2G_CreateSubSceneRequest {
+            export interface IC2G_CreateSubSceneRequest {
             }
 
             /** 客户端发送给Gate服务器通知map服务器创建一个SubScene */
-            class C2G_CreateSubSceneRequest implements IC2G_CreateSubSceneRequest {
+            export class C2G_CreateSubSceneRequest implements IC2G_CreateSubSceneRequest {
 
                 /**
                  * Constructs a new C2G_CreateSubSceneRequest.
@@ -3108,11 +3148,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_CreateSubSceneResponse. */
-            interface IG2C_CreateSubSceneResponse {
+            export interface IG2C_CreateSubSceneResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_CreateSubSceneResponse. */
-            class G2C_CreateSubSceneResponse implements IG2C_CreateSubSceneResponse {
+            export class G2C_CreateSubSceneResponse implements IG2C_CreateSubSceneResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_CreateSubSceneResponse.
@@ -3199,11 +3244,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_SendToSubSceneMessage. */
-            interface IC2G_SendToSubSceneMessage {
+            export interface IC2G_SendToSubSceneMessage {
             }
 
             /** 客户端通知Gate服务器给SubScene发送一个消息 */
-            class C2G_SendToSubSceneMessage implements IC2G_SendToSubSceneMessage {
+            export class C2G_SendToSubSceneMessage implements IC2G_SendToSubSceneMessage {
 
                 /**
                  * Constructs a new C2G_SendToSubSceneMessage.
@@ -3290,11 +3335,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_CreateSubSceneAddressableRequest. */
-            interface IC2G_CreateSubSceneAddressableRequest {
+            export interface IC2G_CreateSubSceneAddressableRequest {
             }
 
             /** 客户端通知Gate服务器创建一个SubScene的Address消息 */
-            class C2G_CreateSubSceneAddressableRequest implements IC2G_CreateSubSceneAddressableRequest {
+            export class C2G_CreateSubSceneAddressableRequest implements IC2G_CreateSubSceneAddressableRequest {
 
                 /**
                  * Constructs a new C2G_CreateSubSceneAddressableRequest.
@@ -3381,11 +3426,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_CreateSubSceneAddressableResponse. */
-            interface IG2C_CreateSubSceneAddressableResponse {
+            export interface IG2C_CreateSubSceneAddressableResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_CreateSubSceneAddressableResponse. */
-            class G2C_CreateSubSceneAddressableResponse implements IG2C_CreateSubSceneAddressableResponse {
+            export class G2C_CreateSubSceneAddressableResponse implements IG2C_CreateSubSceneAddressableResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_CreateSubSceneAddressableResponse.
@@ -3472,14 +3522,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2SubScene_TestMessage. */
-            interface IC2SubScene_TestMessage {
+            export interface IC2SubScene_TestMessage {
 
                 /** C2SubScene_TestMessage Tag */
                 Tag?: (string|null);
             }
 
             /** 客户端向SubScene发送一个测试消息 */
-            class C2SubScene_TestMessage implements IC2SubScene_TestMessage {
+            export class C2SubScene_TestMessage implements IC2SubScene_TestMessage {
 
                 /**
                  * Constructs a new C2SubScene_TestMessage.
@@ -3569,11 +3619,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2SubScene_TestDisposeMessage. */
-            interface IC2SubScene_TestDisposeMessage {
+            export interface IC2SubScene_TestDisposeMessage {
             }
 
             /** 客户端向SubScene发送一个销毁测试消息 */
-            class C2SubScene_TestDisposeMessage implements IC2SubScene_TestDisposeMessage {
+            export class C2SubScene_TestDisposeMessage implements IC2SubScene_TestDisposeMessage {
 
                 /**
                  * Constructs a new C2SubScene_TestDisposeMessage.
@@ -3660,11 +3710,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_ConnectRoamingRequest. */
-            interface IC2G_ConnectRoamingRequest {
+            export interface IC2G_ConnectRoamingRequest {
             }
 
             /** 客户端向服务器发送连接消息（Roaming） */
-            class C2G_ConnectRoamingRequest implements IC2G_ConnectRoamingRequest {
+            export class C2G_ConnectRoamingRequest implements IC2G_ConnectRoamingRequest {
 
                 /**
                  * Constructs a new C2G_ConnectRoamingRequest.
@@ -3751,11 +3801,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_ConnectRoamingResponse. */
-            interface IG2C_ConnectRoamingResponse {
+            export interface IG2C_ConnectRoamingResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_ConnectRoamingResponse. */
-            class G2C_ConnectRoamingResponse implements IG2C_ConnectRoamingResponse {
+            export class G2C_ConnectRoamingResponse implements IG2C_ConnectRoamingResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_ConnectRoamingResponse.
@@ -3842,14 +3897,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2Chat_TestRoamingMessage. */
-            interface IC2Chat_TestRoamingMessage {
+            export interface IC2Chat_TestRoamingMessage {
 
                 /** C2Chat_TestRoamingMessage Tag */
                 Tag?: (string|null);
             }
 
             /** 测试一个Chat漫游普通消息 */
-            class C2Chat_TestRoamingMessage implements IC2Chat_TestRoamingMessage {
+            export class C2Chat_TestRoamingMessage implements IC2Chat_TestRoamingMessage {
 
                 /**
                  * Constructs a new C2Chat_TestRoamingMessage.
@@ -3939,14 +3994,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2Map_TestRoamingMessage. */
-            interface IC2Map_TestRoamingMessage {
+            export interface IC2Map_TestRoamingMessage {
 
                 /** C2Map_TestRoamingMessage Tag */
                 Tag?: (string|null);
             }
 
             /** 测试一个Map漫游普通消息 */
-            class C2Map_TestRoamingMessage implements IC2Map_TestRoamingMessage {
+            export class C2Map_TestRoamingMessage implements IC2Map_TestRoamingMessage {
 
                 /**
                  * Constructs a new C2Map_TestRoamingMessage.
@@ -4036,14 +4091,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2Chat_TestRPCRoamingRequest. */
-            interface IC2Chat_TestRPCRoamingRequest {
+            export interface IC2Chat_TestRPCRoamingRequest {
 
                 /** C2Chat_TestRPCRoamingRequest Tag */
                 Tag?: (string|null);
             }
 
             /** 测试一个Chat漫游RPC消息 */
-            class C2Chat_TestRPCRoamingRequest implements IC2Chat_TestRPCRoamingRequest {
+            export class C2Chat_TestRPCRoamingRequest implements IC2Chat_TestRPCRoamingRequest {
 
                 /**
                  * Constructs a new C2Chat_TestRPCRoamingRequest.
@@ -4133,11 +4188,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a Chat2C_TestRPCRoamingResponse. */
-            interface IChat2C_TestRPCRoamingResponse {
+            export interface IChat2C_TestRPCRoamingResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a Chat2C_TestRPCRoamingResponse. */
-            class Chat2C_TestRPCRoamingResponse implements IChat2C_TestRPCRoamingResponse {
+            export class Chat2C_TestRPCRoamingResponse implements IChat2C_TestRPCRoamingResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new Chat2C_TestRPCRoamingResponse.
@@ -4224,14 +4284,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2Map_PushMessageToClient. */
-            interface IC2Map_PushMessageToClient {
+            export interface IC2Map_PushMessageToClient {
 
                 /** C2Map_PushMessageToClient Tag */
                 Tag?: (string|null);
             }
 
             /** 客户端发送一个漫游消息给Map通知Map主动推送一个消息给客户端 */
-            class C2Map_PushMessageToClient implements IC2Map_PushMessageToClient {
+            export class C2Map_PushMessageToClient implements IC2Map_PushMessageToClient {
 
                 /**
                  * Constructs a new C2Map_PushMessageToClient.
@@ -4321,14 +4381,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a Map2C_PushMessageToClient. */
-            interface IMap2C_PushMessageToClient {
+            export interface IMap2C_PushMessageToClient {
 
                 /** Map2C_PushMessageToClient Tag */
                 Tag?: (string|null);
             }
 
             /** 漫游端发送一个消息给客户端 */
-            class Map2C_PushMessageToClient implements IMap2C_PushMessageToClient {
+            export class Map2C_PushMessageToClient implements IMap2C_PushMessageToClient {
 
                 /**
                  * Constructs a new Map2C_PushMessageToClient.
@@ -4418,11 +4478,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2Map_TestTransferRequest. */
-            interface IC2Map_TestTransferRequest {
+            export interface IC2Map_TestTransferRequest {
             }
 
             /** 测试传送漫游的触发协议 */
-            class C2Map_TestTransferRequest implements IC2Map_TestTransferRequest {
+            export class C2Map_TestTransferRequest implements IC2Map_TestTransferRequest {
 
                 /**
                  * Constructs a new C2Map_TestTransferRequest.
@@ -4509,11 +4569,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a Map2C_TestTransferResponse. */
-            interface IMap2C_TestTransferResponse {
+            export interface IMap2C_TestTransferResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a Map2C_TestTransferResponse. */
-            class Map2C_TestTransferResponse implements IMap2C_TestTransferResponse {
+            export class Map2C_TestTransferResponse implements IMap2C_TestTransferResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new Map2C_TestTransferResponse.
@@ -4600,14 +4665,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2Chat_TestSendMapMessage. */
-            interface IC2Chat_TestSendMapMessage {
+            export interface IC2Chat_TestSendMapMessage {
 
                 /** C2Chat_TestSendMapMessage Tag */
                 Tag?: (string|null);
             }
 
             /** 测试一个Chat发送到Map之间漫游协议 */
-            class C2Chat_TestSendMapMessage implements IC2Chat_TestSendMapMessage {
+            export class C2Chat_TestSendMapMessage implements IC2Chat_TestSendMapMessage {
 
                 /**
                  * Constructs a new C2Chat_TestSendMapMessage.
@@ -4697,14 +4762,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_TestRouteToRoaming. */
-            interface IC2G_TestRouteToRoaming {
+            export interface IC2G_TestRouteToRoaming {
 
                 /** C2G_TestRouteToRoaming Tag */
                 Tag?: (string|null);
             }
 
             /** 通知Gate服务器发送一个Route消息给Map的漫游终端 */
-            class C2G_TestRouteToRoaming implements IC2G_TestRouteToRoaming {
+            export class C2G_TestRouteToRoaming implements IC2G_TestRouteToRoaming {
 
                 /**
                  * Constructs a new C2G_TestRouteToRoaming.
@@ -4794,14 +4859,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_TestRoamingToRoaming. */
-            interface IC2G_TestRoamingToRoaming {
+            export interface IC2G_TestRoamingToRoaming {
 
                 /** C2G_TestRoamingToRoaming Tag */
                 Tag?: (string|null);
             }
 
             /** 通知Gate服务器发送一个漫游消息给Map的漫游终端 */
-            class C2G_TestRoamingToRoaming implements IC2G_TestRoamingToRoaming {
+            export class C2G_TestRoamingToRoaming implements IC2G_TestRoamingToRoaming {
 
                 /**
                  * Constructs a new C2G_TestRoamingToRoaming.
@@ -4891,11 +4956,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_LoginRoamingRequest. */
-            interface IC2G_LoginRoamingRequest {
+            export interface IC2G_LoginRoamingRequest {
             }
 
             /** 客户端向服务器发送登录连接消息（Roaming） */
-            class C2G_LoginRoamingRequest implements IC2G_LoginRoamingRequest {
+            export class C2G_LoginRoamingRequest implements IC2G_LoginRoamingRequest {
 
                 /**
                  * Constructs a new C2G_LoginRoamingRequest.
@@ -4982,11 +5047,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_LoginRoamingResponse. */
-            interface IG2C_LoginRoamingResponse {
+            export interface IG2C_LoginRoamingResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_LoginRoamingResponse. */
-            class G2C_LoginRoamingResponse implements IG2C_LoginRoamingResponse {
+            export class G2C_LoginRoamingResponse implements IG2C_LoginRoamingResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_LoginRoamingResponse.
@@ -5073,11 +5143,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_SubscribeSphereEventRequest. */
-            interface IC2G_SubscribeSphereEventRequest {
+            export interface IC2G_SubscribeSphereEventRequest {
             }
 
             /** 通知Gate服务器发送一个内网消息通知Map服务器向Gate服务器注册一个领域事件 */
-            class C2G_SubscribeSphereEventRequest implements IC2G_SubscribeSphereEventRequest {
+            export class C2G_SubscribeSphereEventRequest implements IC2G_SubscribeSphereEventRequest {
 
                 /**
                  * Constructs a new C2G_SubscribeSphereEventRequest.
@@ -5164,11 +5234,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_SubscribeSphereEventResponse. */
-            interface IG2C_SubscribeSphereEventResponse {
+            export interface IG2C_SubscribeSphereEventResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_SubscribeSphereEventResponse. */
-            class G2C_SubscribeSphereEventResponse implements IG2C_SubscribeSphereEventResponse {
+            export class G2C_SubscribeSphereEventResponse implements IG2C_SubscribeSphereEventResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_SubscribeSphereEventResponse.
@@ -5255,11 +5330,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_PublishSphereEventRequest. */
-            interface IC2G_PublishSphereEventRequest {
+            export interface IC2G_PublishSphereEventRequest {
             }
 
             /** 通知Gate发送一个订阅领域事件 */
-            class C2G_PublishSphereEventRequest implements IC2G_PublishSphereEventRequest {
+            export class C2G_PublishSphereEventRequest implements IC2G_PublishSphereEventRequest {
 
                 /**
                  * Constructs a new C2G_PublishSphereEventRequest.
@@ -5346,11 +5421,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_PublishSphereEventResponse. */
-            interface IG2C_PublishSphereEventResponse {
+            export interface IG2C_PublishSphereEventResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_PublishSphereEventResponse. */
-            class G2C_PublishSphereEventResponse implements IG2C_PublishSphereEventResponse {
+            export class G2C_PublishSphereEventResponse implements IG2C_PublishSphereEventResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_PublishSphereEventResponse.
@@ -5437,11 +5517,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_UnsubscribeSphereEventRequest. */
-            interface IC2G_UnsubscribeSphereEventRequest {
+            export interface IC2G_UnsubscribeSphereEventRequest {
             }
 
             /** 通知Gate取消一个订阅领域事件 */
-            class C2G_UnsubscribeSphereEventRequest implements IC2G_UnsubscribeSphereEventRequest {
+            export class C2G_UnsubscribeSphereEventRequest implements IC2G_UnsubscribeSphereEventRequest {
 
                 /**
                  * Constructs a new C2G_UnsubscribeSphereEventRequest.
@@ -5528,11 +5608,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_UnsubscribeSphereEventResponse. */
-            interface IG2C_UnsubscribeSphereEventResponse {
+            export interface IG2C_UnsubscribeSphereEventResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_UnsubscribeSphereEventResponse. */
-            class G2C_UnsubscribeSphereEventResponse implements IG2C_UnsubscribeSphereEventResponse {
+            export class G2C_UnsubscribeSphereEventResponse implements IG2C_UnsubscribeSphereEventResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_UnsubscribeSphereEventResponse.
@@ -5619,11 +5704,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_MapUnsubscribeSphereEventRequest. */
-            interface IC2G_MapUnsubscribeSphereEventRequest {
+            export interface IC2G_MapUnsubscribeSphereEventRequest {
             }
 
             /** 通知Map取消一个订阅领域事件 */
-            class C2G_MapUnsubscribeSphereEventRequest implements IC2G_MapUnsubscribeSphereEventRequest {
+            export class C2G_MapUnsubscribeSphereEventRequest implements IC2G_MapUnsubscribeSphereEventRequest {
 
                 /**
                  * Constructs a new C2G_MapUnsubscribeSphereEventRequest.
@@ -5710,11 +5795,16 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_MapUnsubscribeSphereEventResponse. */
-            interface IG2C_MapUnsubscribeSphereEventResponse {
+            export interface IG2C_MapUnsubscribeSphereEventResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
             }
 
             /** Represents a G2C_MapUnsubscribeSphereEventResponse. */
-            class G2C_MapUnsubscribeSphereEventResponse implements IG2C_MapUnsubscribeSphereEventResponse {
+            export class G2C_MapUnsubscribeSphereEventResponse implements IG2C_MapUnsubscribeSphereEventResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_MapUnsubscribeSphereEventResponse.
@@ -5801,14 +5891,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a ChatInfoData. */
-            interface IChatInfoData {
+            export interface IChatInfoData {
 
                 /** ChatInfoData Data */
                 Data?: (Uint8Array|null);
             }
 
             /** Represents a ChatInfoData. */
-            class ChatInfoData implements IChatInfoData {
+            export class ChatInfoData implements IChatInfoData {
 
                 /**
                  * Constructs a new ChatInfoData.
@@ -5898,14 +5988,14 @@ export namespace Fantasy {
             }
 
             /** Properties of a TestMemoryPackInfo. */
-            interface ITestMemoryPackInfo {
+            export interface ITestMemoryPackInfo {
 
                 /** TestMemoryPackInfo A */
                 A?: (string|null);
             }
 
             /** Represents a TestMemoryPackInfo. */
-            class TestMemoryPackInfo implements ITestMemoryPackInfo {
+            export class TestMemoryPackInfo implements ITestMemoryPackInfo {
 
                 /**
                  * Constructs a new TestMemoryPackInfo.
@@ -5995,11 +6085,11 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_TestMemoryPackRequest. */
-            interface IC2G_TestMemoryPackRequest {
+            export interface IC2G_TestMemoryPackRequest {
             }
 
             /** Represents a C2G_TestMemoryPackRequest. */
-            class C2G_TestMemoryPackRequest implements IC2G_TestMemoryPackRequest {
+            export class C2G_TestMemoryPackRequest implements IC2G_TestMemoryPackRequest {
 
                 /**
                  * Constructs a new C2G_TestMemoryPackRequest.
@@ -6086,14 +6176,19 @@ export namespace Fantasy {
             }
 
             /** Properties of a G2C_TestMemoryPackResponse. */
-            interface IG2C_TestMemoryPackResponse {
+            export interface IG2C_TestMemoryPackResponse {
+                /** Fantasy IResponse 框架错误码 */
+                errorCode?: (number|null);
 
                 /** G2C_TestMemoryPackResponse Info */
                 Info?: (Fantasy.Network.Message.ITestMemoryPackInfo|null);
             }
 
             /** Represents a G2C_TestMemoryPackResponse. */
-            class G2C_TestMemoryPackResponse implements IG2C_TestMemoryPackResponse {
+            export class G2C_TestMemoryPackResponse implements IG2C_TestMemoryPackResponse {
+                /** Fantasy IResponse 框架错误码 */
+                public errorCode: number;
+
 
                 /**
                  * Constructs a new G2C_TestMemoryPackResponse.
@@ -6183,7 +6278,7 @@ export namespace Fantasy {
             }
 
             /** 错误码枚举 */
-            enum ErrorCodeEnum {
+            export enum ErrorCodeEnum {
                 Success = 0,
                 Failed = 1,
                 UnknownError = 2,
@@ -6192,7 +6287,7 @@ export namespace Fantasy {
             }
 
             /** 玩家状态 */
-            enum PlayerState {
+            export enum PlayerState {
                 Offline = 0,
                 Online = 1,
                 Busy = 2,
@@ -6200,7 +6295,7 @@ export namespace Fantasy {
             }
 
             /** Properties of a C2G_TestEnumMessage. */
-            interface IC2G_TestEnumMessage {
+            export interface IC2G_TestEnumMessage {
 
                 /** 错误码 */
                 Code?: (Fantasy.Network.Message.ErrorCodeEnum|null);
@@ -6213,7 +6308,7 @@ export namespace Fantasy {
             }
 
             /** 测试使用ErrorCode枚举的消息 */
-            class C2G_TestEnumMessage implements IC2G_TestEnumMessage {
+            export class C2G_TestEnumMessage implements IC2G_TestEnumMessage {
 
                 /**
                  * Constructs a new C2G_TestEnumMessage.
