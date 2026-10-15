@@ -25,27 +25,27 @@ export declare class NetNodeGame extends NetNode {
      * 简化写法（协议导出 OuterSend）：
      * `send(OuterSend.C2G_TestMessage, { Tag: 'hi' })`
      */
-    send(def: OuterSendDef, params?: Record<string, unknown>, address?: bigint): void;
+    send<TReq = Record<string, unknown>>(def: OuterSendDef<TReq>, params?: TReq, address?: bigint): void;
     send(cmd: number, reqName?: string, params?: Record<string, unknown>, address?: bigint): void;
     /** 发送不期待 Response 的消息 */
     notify(cmd: number, reqName?: string, params?: Record<string, unknown>, address?: bigint): void;
     /**
      * RPC 调用（对齐 Fantasy Session.Call）
      *
-     * 简化写法（协议导出 OuterRpc，opcode/req/resp 已绑定）：
-     * `callRpc(OuterRpc.C2G_TestRequest, { Tag: 'hi', Data: [1] })`
+     * `call(OuterRpc.C2G_ConnectRoamingRequest, {})`
+     * → `Promise<WebSocketReturn<G2C_ConnectRoamingResponse>>`
      */
-    call<T>(def: OuterRpcDef, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
-    call<T>(cmd: number, reqName: string, respName: string, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
+    call<TResp, TReq = Record<string, unknown>>(def: OuterRpcDef<TResp, TReq>, params?: TReq, address?: bigint): Promise<WebSocketReturn<TResp>>;
+    call(cmd: number, reqName: string, respName: string, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<unknown>>;
     /** @alias call */
-    callRpc<T>(def: OuterRpcDef, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
-    callRpc<T>(cmd: number, reqName: string, respName: string, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<T>>;
+    callRpc<TResp, TReq = Record<string, unknown>>(def: OuterRpcDef<TResp, TReq>, params?: TReq, address?: bigint): Promise<WebSocketReturn<TResp>>;
+    callRpc(cmd: number, reqName: string, respName: string, params?: Record<string, unknown>, address?: bigint): Promise<WebSocketReturn<unknown>>;
     /**
      * 监听服务器推送
      *
      * 简化写法：`on(OuterPush.G2C_PushMessage, (data) => { ... })`
      */
-    on(def: OuterPushDef, callback: NetCallFunc, target?: any): void;
+    on<TData>(def: OuterPushDef<TData>, callback: (data: TData, ...args: any[]) => void, target?: any): void;
     on(cmd: number, respName: string, callback: NetCallFunc, target?: any): void;
     off(cmd: number, callback: NetCallFunc, target?: any): void;
 }

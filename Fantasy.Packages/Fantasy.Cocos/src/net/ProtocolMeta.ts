@@ -28,7 +28,7 @@ export interface OuterPushDef<TData = unknown> {
   readonly __data: TData;
 }
 
-export function isOuterRpcDef(value: unknown): value is OuterRpcDef {
+export function isOuterRpcDef(value: unknown): value is OuterRpcDef<any, any> {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -38,7 +38,7 @@ export function isOuterRpcDef(value: unknown): value is OuterRpcDef {
   );
 }
 
-export function isOuterSendDef(value: unknown): value is OuterSendDef {
+export function isOuterSendDef(value: unknown): value is OuterSendDef<any> {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -48,7 +48,7 @@ export function isOuterSendDef(value: unknown): value is OuterSendDef {
   );
 }
 
-export function isOuterPushDef(value: unknown): value is OuterPushDef {
+export function isOuterPushDef(value: unknown): value is OuterPushDef<any> {
   return (
     typeof value === 'object' &&
     value !== null &&

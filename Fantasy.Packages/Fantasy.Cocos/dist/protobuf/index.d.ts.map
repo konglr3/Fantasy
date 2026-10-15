@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/protobuf/index.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,oBAAoB,EACpB,0BAA0B,EAC3B,MAAM,wBAAwB,CAAC;AAChC,YAAY,EACV,mBAAmB,EACnB,gBAAgB,EACjB,MAAM,wBAAwB,CAAC"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/protobuf/index.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,oBAAoB,EACpB,0BAA0B,EAC1B,kBAAkB,EAClB,gBAAgB,EACjB,MAAM,wBAAwB,CAAC;AAChC,YAAY,EACV,mBAAmB,EACnB,gBAAgB,EAChB,aAAa,EACb,eAAe,EAChB,MAAM,wBAAwB,CAAC;AAChC,OAAO,EAAE,2BAA2B,EAAE,MAAM,yBAAyB,CAAC"}
