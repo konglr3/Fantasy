@@ -7,22 +7,30 @@
 - 外网包头定义与组包解包（`PacketConstants` / `encodeOuterFrame` / `OuterStreamReassembler`）
 - `WebSocketSession` / `FantasyRuntime`（底层一键连接）
 - `src/net`：业务网络层（重连、心跳、RPC 队列、Tips），已适配 Fantasy Outer
-- `fantasy-cocos/protobuf`：`ProtoOuterDispatcher` 按 opcode 编解码
+- `fantasy-cocos/protobuf`：`ProtoOuterDispatcher` 按 opcode 编解码（兼容反射 Root 与 pbjs static-module）
 - `src/proto`：协议导出工具默认输出目录（TypeScript 类型 + OpCode + DispatcherInit）
 
-## 协议导出
+## 协议流水线（推荐）
 
-使用 `Fantasy.ProtocolExportTool` 或 `Fantasy.ProtocolEditor`：
+1. **ProtocolExportTool**：生成 `OuterOpcode` / `OuterProtocol` / `ProtoOuterDispatcherInit`（**不**再生成 OuterMessage / OuterEnum）
+2. **`npm run build:proto`**（Cocos 示例工程）：normalize Outer `.proto` → `pbjs`/`pbts` 静态模块 `outer_pb.js` + 类型 `outer_pb.d.ts`
 
-1. 配置 `NetworkProtocolTypeScriptClientDirectory`（默认可填 `../Fantasy.Cocos/src/proto`）
-2. 导出后生成 `OuterOpcode.ts` / `OuterMessage.ts` / `ProtoOuterDispatcherInit.ts` 等
-3. 客户端用 `protobufjs` 加载同结构的 Outer `.proto`，再 `registerOuterProtobufMessages`
-
-命令行示例：
+示例工程：`examples/Client/Cocos`（`postinstall` 会 link 扩展并执行 `build:proto`）。
 
 ```bash
 dotnet run --project Fantasy.Packages/Fantasy.ProtocolExportTool -- export -S --config path/to/ExporterSettings.json
-# 或交互：加 -ts ../Fantasy.Cocos/src/proto
+cd examples/Client/Cocos && npm run build:proto
+```
+
+```ts
+import { ProtoOuterDispatcher } from 'db://fantasy-cocos/protobuf/index';
+import { registerOuterProtobufMessages } from './proto/ProtoOuterDispatcherInit';
+import { getOuterProtoRoot } from './proto/pb';
+
+const dispatcher = new ProtoOuterDispatcher(getOuterProtoRoot());
+// 或：先 import './proto/pb/outer_pb.js' 后
+// const dispatcher = ProtoOuterDispatcher.fromStaticRoot('FantasyOuter');
+registerOuterProtobufMessages(dispatcher);
 ```
 
 ## 推荐接入（Cocos Creator 扩展 / asset-db）
@@ -39,15 +47,15 @@ import { ProtoOuterDispatcher } from 'db://fantasy-cocos/protobuf/index';
 
 ## Node / 非 Creator 接入（npm dist）
 
+仍可用反射 Root；或先加载静态模块再 `fromStaticRoot`：
+
 ```ts
-import protobuf from 'protobufjs';
 import { netChannel, NetConfig } from 'fantasy-cocos';
 import { ProtoOuterDispatcher } from 'fantasy-cocos/protobuf';
-import { OuterOpcode } from './proto/OuterOpcode';
 import { registerOuterProtobufMessages } from './proto/ProtoOuterDispatcherInit';
+import { getOuterProtoRoot } from './proto/pb';
 
-const root = await protobuf.load('resources/proto/OuterMessage.proto');
-const dispatcher = new ProtoOuterDispatcher(root);
+const dispatcher = new ProtoOuterDispatcher(getOuterProtoRoot());
 registerOuterProtobufMessages(dispatcher);
 
 NetConfig.gameIp = '127.0.0.1';

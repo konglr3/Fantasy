@@ -1,8 +1,13 @@
 export {
   ProtoOuterDispatcher,
-  attachProtoOuterDispatcher
+  attachProtoOuterDispatcher,
+  getStaticProtoRoot,
+  resolveProtoType
 } from './ProtoOuterDispatcher';
 export type {
   DecodedOuterMessage,
-  DecodeErrorEvent
+  DecodeErrorEvent,
+  ProtoRootLike,
+  StaticProtoType
 } from './ProtoOuterDispatcher';
+export { normalizeFantasyProtoSource } from './normalizeFantasyProto';

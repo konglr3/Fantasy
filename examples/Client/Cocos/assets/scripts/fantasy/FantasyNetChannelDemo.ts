@@ -7,21 +7,15 @@
  * - Outer/Roaming/Chat   → ConnectRoaming 后的 Chat 漫游消息
  *
  * 用法：
- * 1. npm install（同步 Fantasy.Cocos/src → extensions/fantasy-cocos/assets）
- * 2. ProtocolExportTool 导出协议到 assets/scripts/proto
+ * 1. npm install（link 扩展 + build:proto 生成静态 pb）
+ * 2. ProtocolExportTool 导出绑定到 assets/scripts/proto
  * 3. 扩展管理器确认 fantasy-cocos 已启用
  * 4. 挂载本组件到场景节点后预览
  *
  * Gate WebSocket 默认 127.0.0.1:20000；HTTP 需 Scene 配置 NetworkProtocol=HTTP 并监听 httpBaseUrl。
  */
 
-import {
-  _decorator,
-  Component,
-  resources,
-  TextAsset,
-} from 'cc';
-import protobuf from 'protobufjs';
+import { _decorator, Component } from 'cc';
 import {
   netChannel,
   NetConfig,
@@ -31,23 +25,16 @@ import { ProtoOuterDispatcher } from 'db://fantasy-cocos/protobuf/index';
 import { OuterOpcode } from '../proto/OuterOpcode';
 import { OuterPush, OuterRpc, OuterSend } from '../proto/OuterProtocol';
 import { registerOuterProtobufMessages } from '../proto/ProtoOuterDispatcherInit';
+import { getOuterProtoRoot } from '../proto/pb';
+import type { Fantasy } from '../proto/pb/outer_pb';
 
 const { ccclass, property } = _decorator;
 
-interface G2C_TestResponse {
-  errorCode?: number;
-  Tag?: string;
-  Data?: number[];
-  Lists?: readonly number[];
-}
-
-interface G2C_ConnectRoamingResponse {
-  errorCode?: number;
-}
-
-interface Chat2C_TestRPCRoamingResponse {
-  errorCode?: number;
-}
+/** pbts 消息字段 + 框架 errorCode */
+type WithErrorCode<T> = T & { errorCode?: number };
+type G2C_TestResponse = WithErrorCode<Fantasy.Network.Message.IG2C_TestResponse>;
+type G2C_ConnectRoamingResponse = WithErrorCode<Fantasy.Network.Message.IG2C_ConnectRoamingResponse>;
+type Chat2C_TestRPCRoamingResponse = WithErrorCode<Fantasy.Network.Message.IChat2C_TestRPCRoamingResponse>;
 
 @ccclass('FantasyNetChannelDemo')
 export class FantasyNetChannelDemo extends Component {
@@ -64,7 +51,7 @@ export class FantasyNetChannelDemo extends Component {
   useTls = false;
 
   @property({ tooltip: 'HTTP 示例根地址（对应 HTTPHandler Controllers）' })
-  httpBaseUrl = 'http://127.0.0.1:8080';
+  httpBaseUrl = 'http://127.0.0.1:20010';
 
   @property({ tooltip: '连接成功后自动跑下方示例' })
   autoSendTest = true;
@@ -77,9 +64,6 @@ export class FantasyNetChannelDemo extends Component {
 
   @property({ tooltip: '跑 Outer/Roaming/Chat 示例（先 ConnectRoaming）' })
   runRoamingChatExamples = true;
-
-  @property({ tooltip: 'resources 下的 proto 文本路径（不含扩展名）' })
-  protoResourcePath = 'proto/OuterMessage';
 
   private _stop: (() => void) | null = null;
   private _roamingReady = false;
@@ -104,8 +88,8 @@ export class FantasyNetChannelDemo extends Component {
       await this.demoHttpHandlerExamples();
     }
 
-    const root = await this.loadProtoRoot(this.protoResourcePath);
-    const dispatcher = new ProtoOuterDispatcher(root);
+    // 静态 pb：npm run build:proto → assets/scripts/proto/pb/outer_pb.js
+    const dispatcher = new ProtoOuterDispatcher(getOuterProtoRoot());
     registerOuterProtobufMessages(dispatcher);
 
     dispatcher.onDecoded = (evt) => {
@@ -170,6 +154,7 @@ export class FantasyNetChannelDemo extends Component {
   /**
    * 对应 examples/Server/.../HTTPHandler
    * 需服务器 Scene 以 HTTP 协议监听 httpBaseUrl（与 Outer WebSocket 独立）。
+   * Cocos 浏览器预览跨域依赖服务端 HttpCorsConfigure（AllowAll）。
    */
   public async demoHttpHandlerExamples(): Promise<void> {
     const base = this.httpBaseUrl.replace(/\/$/, '');
@@ -210,7 +195,8 @@ export class FantasyNetChannelDemo extends Component {
   public async demoCallTestRequest(): Promise<void> {
     const ret = await netChannel.game.call<G2C_TestResponse>(OuterRpc.C2G_TestRequest, {
       Tag: 'hello-from-cocos-call',
-      Data: [1, 2, 3],
+      // Fantasy `repeatedList byte` → 标准 `bytes`（与 LightProto List<byte> 一致）
+      Data: Uint8Array.from([1, 2, 3]),
     });
 
     if (ret.isSucc) {
@@ -363,23 +349,6 @@ export class FantasyNetChannelDemo extends Component {
     } catch (e) {
       console.warn(`[HTTPHandler] ${label} failed（请确认 HTTP Scene 已监听 ${this.httpBaseUrl}）`, e);
     }
-  }
-
-  private loadProtoRoot(resourcePath: string): Promise<protobuf.Root> {
-    return new Promise((resolve, reject) => {
-      resources.load(resourcePath, TextAsset, (err, asset) => {
-        if (err || !asset) {
-          reject(err ?? new Error(`[Fantasy Cocos] load proto failed: ${resourcePath}`));
-          return;
-        }
-        try {
-          const parsed = protobuf.parse(asset.text, { keepCase: true });
-          resolve(parsed.root);
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
   }
 
   private async waitUntilWorking(timeoutMs: number): Promise<void> {

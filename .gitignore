@@ -41,3 +41,4 @@ Fantasy.Packages/Fantasy.Cil/Resources
 # Cocos package dependencies
 Fantasy.Packages/Fantasy.Cocos/node_modules/
 
+examples/Client/Cocos/.creator

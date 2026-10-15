@@ -12,6 +12,7 @@
 ```ts
 import { netChannel, NetConfig } from 'db://fantasy-cocos/index';
 import { ProtoOuterDispatcher } from 'db://fantasy-cocos/protobuf/index';
+import { getOuterProtoRoot } from './proto/pb';
 ```
 
 ## 目录
@@ -24,30 +25,38 @@ extensions/
 assets/
   scripts/
     fantasy/FantasyNetChannelDemo.ts
-    proto/                       # ProtocolExportTool 导出
-  resources/
-    proto/OuterMessage.txt
+    proto/                       # ProtocolExportTool：Opcode / interface / 绑定
+      pb/                        # npm run build:proto：静态编解码 JS+d.ts
 ```
 
-## 1. 安装 & 同步扩展资源
+## 1. 安装 & 同步
 
 ```bash
 cd examples/Client/Cocos
 npm install
-# 等价于：npm run link:fantasy-cocos
+# postinstall = link:fantasy-cocos + build:proto
 ```
 
-改了 `Fantasy.Packages/Fantasy.Cocos/src` 后重新执行一次 `npm run link:fantasy-cocos`，并在编辑器里刷新扩展/资源。
+- 改了 `Fantasy.Packages/Fantasy.Cocos/src` → 再跑 `npm run link:fantasy-cocos`
+- 改了 `examples/Config/NetworkProtocol/Outer/*.proto` → 再跑 `npm run build:proto`
 
 ## 2. 启用扩展
 
 **扩展 → 扩展管理器** 确认 `fantasy-cocos` 已启用；资源管理器应出现 `fantasy-cocos` 包。
 
-## 3. 导出协议
+## 3. 协议流水线
+
+| 步骤 | 命令 | 产出 |
+|------|------|------|
+| 绑定 / OpCode / interface | ProtocolExportTool | `assets/scripts/proto/*.ts` |
+| 静态编解码 | `npm run build:proto` | `assets/scripts/proto/pb/outer_pb.js` + `.d.ts` |
 
 ```bash
 dotnet run --project Fantasy.Packages/Fantasy.ProtocolExportTool -- export -S --config examples/Tools/ProtocolExportTool/ExporterSettings.json
+npm run build:proto
 ```
+
+Demo 启动时 `import` 静态 `outer_pb`，**不再** `resources.loadDir('proto')` 解析 `.proto`。
 
 ## 4. 运行
 

@@ -105,90 +105,12 @@ public sealed class TypeScriptExporter(
 
     protected override string GenerateInnerOpcode(IReadOnlyList<OpcodeInfo> opcodeInfos) => string.Empty;
 
+    /// <summary>
+    /// 消息结构类型由 pbjs/pbts（outer_pb.d.ts）提供，不再生成 OuterMessage.ts。
+    /// </summary>
     protected override string GenerateOuterMessages(
         IReadOnlySet<string> outerNamespaces,
-        IReadOnlyDictionary<string, MessageDefinition> messageDefinitions)
-    {
-        if (messageDefinitions.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        var sb = new StringBuilder();
-        sb.Append(FileHeader);
-
-        if (outerNamespaces.Count > 0)
-        {
-            sb.AppendLine("/** 协议中声明的 C# using（TypeScript 侧仅作文档） */");
-            foreach (var ns in outerNamespaces.OrderBy(x => x, StringComparer.Ordinal))
-            {
-                sb.AppendLine($"// using {EscapeComment(ns)}");
-            }
-
-            sb.AppendLine();
-        }
-
-        sb.AppendLine("/** 外网消息结构（与 C# OuterMessage 字段语义对齐） */");
-
-        foreach (var (messageName, message) in messageDefinitions)
-        {
-            foreach (var line in message.DefineConstants)
-            {
-                sb.AppendLine($"// {EscapeComment(line)}");
-            }
-
-            WriteMessageComment(sb, message);
-            sb.AppendLine($"export interface {messageName} {{");
-
-            if (message.HasOpCode)
-            {
-                sb.AppendLine($"  /** OpCode 常量见 \"./OuterOpcode.ts\" 中的 OuterOpcode.{messageName} */");
-            }
-
-            if (IsRequestType(message.MessageType) && !string.IsNullOrEmpty(message.ResponseType))
-            {
-                sb.AppendLine($"  /** 对应响应消息类型（仅类型提示，不参与序列化） */\n  __responseType?: '{message.ResponseType}';");
-            }
-
-            if (IsResponseType(message.MessageType))
-            {
-                sb.AppendLine("  /** 框架响应错误码 */\n  errorCode?: number;");
-            }
-
-            if (HasRouteType(message.MessageType) && !string.IsNullOrEmpty(message.CustomRouteType))
-            {
-                sb.AppendLine($"  /** 路由类型常量: {EscapeComment(message.CustomRouteType)} */\n  routeType?: number;");
-            }
-
-            foreach (var field in message.Fields)
-            {
-                if (field.CustomTextLine != null)
-                {
-                    sb.AppendLine($"  // {EscapeComment(field.CustomTextLine)}");
-                    continue;
-                }
-
-                if (field.DocumentationComments.Count > 0)
-                {
-                    sb.AppendLine("  /**");
-                    foreach (var c in field.DocumentationComments)
-                    {
-                        sb.AppendLine($"   * {EscapeComment(c)}");
-                    }
-
-                    sb.AppendLine("   */");
-                }
-
-                var optional = IsOptionalField(field, messageDefinitions) ? "?" : string.Empty;
-                sb.AppendLine($"  {ToSafePropertyName(field.Name)}{optional}: {ConvertTsType(field, messageDefinitions)};");
-            }
-
-            sb.AppendLine("}");
-            sb.AppendLine();
-        }
-
-        return sb.ToString().TrimEnd() + Environment.NewLine;
-    }
+        IReadOnlyDictionary<string, MessageDefinition> messageDefinitions) => string.Empty;
 
     protected override string GenerateInnerMessages(
         IReadOnlySet<string> innerNamespaces,
@@ -298,28 +220,47 @@ public sealed class TypeScriptExporter(
         return sb.ToString();
     }
 
-    protected override string GenerateOuterEnums(IReadOnlyList<EnumDefinition> enumDefinitions)
-    {
-        return enumDefinitions.Count == 0 ? string.Empty : FileHeader + GenerateEnumsTs(enumDefinitions);
-    }
+    /// <summary>
+    /// 枚举类型由 pbjs/pbts（outer_pb.d.ts）提供，不再生成 OuterEnum.ts。
+    /// </summary>
+    protected override string GenerateOuterEnums(IReadOnlyList<EnumDefinition> enumDefinitions) => string.Empty;
 
     protected override string GenerateInnerEnums(IReadOnlyList<EnumDefinition> enumDefinitions) => string.Empty;
 
     public async Task WriteProtoOuterDispatcherInitAsync()
     {
+        if (!Directory.Exists(ClientDirectory))
+        {
+            Directory.CreateDirectory(ClientDirectory);
+        }
+
+        // 清理历史冗余产物（类型改由 static pb 提供）
+        TryDeleteGeneratedFile("OuterMessage.ts");
+        TryDeleteGeneratedFile("OuterEnum.ts");
+
         var template = BuildProtoOuterDispatcherInitScript(OuterMessages);
         if (string.IsNullOrWhiteSpace(template))
         {
             return;
         }
 
-        if (!Directory.Exists(ClientDirectory))
-        {
-            Directory.CreateDirectory(ClientDirectory);
-        }
-
         var path = Path.Combine(ClientDirectory, $"ProtoOuterDispatcherInit.{GeneratedFileExtension}");
         await File.WriteAllTextAsync(path, template);
+    }
+
+    private void TryDeleteGeneratedFile(string fileName)
+    {
+        var path = Path.Combine(ClientDirectory, fileName);
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
+
+        var meta = path + ".meta";
+        if (File.Exists(meta))
+        {
+            File.Delete(meta);
+        }
     }
 
     private static string BuildProtoOuterDispatcherInitScript(IReadOnlyDictionary<string, MessageDefinition> outerMessages)
@@ -354,149 +295,6 @@ public sealed class TypeScriptExporter(
             """;
     }
 
-    private static string GenerateEnumsTs(IReadOnlyList<EnumDefinition> enumDefinitions)
-    {
-        var sb = new StringBuilder();
-
-        foreach (var enumDefinition in enumDefinitions)
-        {
-            if (enumDefinition.DocumentationComments.Count > 0)
-            {
-                sb.AppendLine("/**");
-                foreach (var c in enumDefinition.DocumentationComments)
-                {
-                    sb.AppendLine($" * {EscapeComment(c)}");
-                }
-
-                sb.AppendLine(" */");
-            }
-
-            sb.AppendLine($"export enum {enumDefinition.Name} {{");
-
-            for (var i = 0; i < enumDefinition.Values.Count; i++)
-            {
-                var value = enumDefinition.Values[i];
-                if (value.DocumentationComments.Count > 0)
-                {
-                    sb.AppendLine("  /**");
-                    foreach (var c in value.DocumentationComments)
-                    {
-                        sb.AppendLine($"   * {EscapeComment(c)}");
-                    }
-
-                    sb.AppendLine("   */");
-                }
-
-                var comma = i < enumDefinition.Values.Count - 1 ? "," : string.Empty;
-                sb.AppendLine($"  {value.Name} = {value.Value}{comma}");
-            }
-
-            sb.AppendLine("}");
-            sb.AppendLine();
-        }
-
-        return sb.ToString().TrimEnd() + Environment.NewLine;
-    }
-
-    private static void WriteMessageComment(StringBuilder sb, MessageDefinition message)
-    {
-        var hasDoc = message.DocumentationComments.Count > 0;
-        var hasMeta = !string.IsNullOrEmpty(message.InterfaceType) ||
-                      (IsRequestType(message.MessageType) && !string.IsNullOrEmpty(message.ResponseType)) ||
-                      (HasRouteType(message.MessageType) && !string.IsNullOrEmpty(message.CustomRouteType));
-
-        if (!hasDoc && !hasMeta)
-        {
-            return;
-        }
-
-        sb.AppendLine("/**");
-        foreach (var c in message.DocumentationComments)
-        {
-            sb.AppendLine($" * {EscapeComment(c)}");
-        }
-
-        if (!string.IsNullOrEmpty(message.InterfaceType))
-        {
-            sb.AppendLine($" * @Fantasy.interface {EscapeComment(message.InterfaceType)}");
-        }
-
-        if (IsRequestType(message.MessageType) && !string.IsNullOrEmpty(message.ResponseType))
-        {
-            sb.AppendLine($" * @response {EscapeComment(message.ResponseType)}");
-        }
-
-        if (HasRouteType(message.MessageType) && !string.IsNullOrEmpty(message.CustomRouteType))
-        {
-            sb.AppendLine($" * @route {EscapeComment(message.CustomRouteType)}");
-        }
-
-        sb.AppendLine(" */");
-    }
-
-    private static bool IsOptionalField(FieldDefinition field, IReadOnlyDictionary<string, MessageDefinition> messageDefinitions)
-    {
-        if (field.CollectionType is FieldCollectionType.Normal or FieldCollectionType.None)
-        {
-            if (messageDefinitions.ContainsKey(field.Type))
-            {
-                return true;
-            }
-
-            return field.Type is "string" or "bytes";
-        }
-
-        return false;
-    }
-
-    private static string ConvertTsType(FieldDefinition field, IReadOnlyDictionary<string, MessageDefinition> messageDefinitions)
-    {
-        return field.CollectionType switch
-        {
-            FieldCollectionType.Normal or FieldCollectionType.None => ConvertTsBaseType(field.Type, messageDefinitions),
-            FieldCollectionType.Repeated or FieldCollectionType.RepeatedList =>
-                $"readonly {ConvertTsBaseType(field.Type, messageDefinitions)}[]",
-            FieldCollectionType.RepeatedArray => $"{ConvertTsBaseType(field.Type, messageDefinitions)}[]",
-            FieldCollectionType.Map =>
-                $"Readonly<Record<{ConvertTsBaseType(field.MapKeyType, messageDefinitions)}, {ConvertTsBaseType(field.MapValueType, messageDefinitions)}>>",
-            _ => throw new NotSupportedException(
-                $"Unsupported collection type '{field.CollectionType}' at line {field.SourceLineNumber}")
-        };
-    }
-
-    private static string ConvertTsBaseType(string type, IReadOnlyDictionary<string, MessageDefinition> messageDefinitions)
-    {
-        switch (type)
-        {
-            case "int32":
-            case "uint32":
-            case "int":
-            case "uint":
-            case "float":
-            case "double":
-            case "byte":
-                return "number";
-            case "int64":
-            case "uint64":
-            case "long":
-            case "ulong":
-                return "bigint";
-            case "bool":
-                return "boolean";
-            case "string":
-                return "string";
-            case "bytes":
-                return "Uint8Array";
-            default:
-                return messageDefinitions.ContainsKey(type) ? type : type;
-        }
-    }
-
-    private static string ToSafePropertyName(string name)
-    {
-        return name.EndsWith('?') ? name[..^1] : name;
-    }
-
     private static string EscapeComment(string? text)
     {
         if (string.IsNullOrEmpty(text))
@@ -511,16 +309,6 @@ public sealed class TypeScriptExporter(
     {
         return value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("'", "\\'", StringComparison.Ordinal);
     }
-
-    private static bool IsRequestType(MessageType type) =>
-        type is MessageType.Request or MessageType.RouteTypeRequest or MessageType.RoamingRequest;
-
-    private static bool IsResponseType(MessageType type) =>
-        type is MessageType.Response or MessageType.RouteTypeResponse or MessageType.RoamingResponse;
-
-    private static bool HasRouteType(MessageType type) =>
-        type is MessageType.RouteTypeMessage or MessageType.RoamingMessage
-            or MessageType.RoamingRequest or MessageType.RouteTypeRequest;
 
     /// <summary>
     /// 约定：G2C_ / M2C_ / Chat2C_ / Map2C_ 等为服务端→客户端消息，进入 OuterPush。

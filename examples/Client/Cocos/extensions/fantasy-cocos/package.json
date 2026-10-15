@@ -2,7 +2,7 @@
   "package_version": 2,
   "version": "2026.0.1023",
   "name": "fantasy-cocos",
-  "description": "Fantasy client runtime for Cocos Creator（挂载 Fantasy.Packages/Fantasy.Cocos/src，不拷贝源码）",
+  "description": "Fantasy client runtime for Cocos Creator（assets 由 link:fantasy-cocos 从 Fantasy.Cocos/src 镜像，见 NOTICE.md）",
   "author": "Fantasy",
   "editor": ">=3.8.0",
   "main": "./main.js",

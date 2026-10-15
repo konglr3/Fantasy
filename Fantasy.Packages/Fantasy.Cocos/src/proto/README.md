@@ -20,24 +20,23 @@
 | 文件 | 说明 |
 |------|------|
 | `OuterOpcode.ts` | 外网 OpCode 常量 |
-| `OuterMessage.ts` | 消息 TypeScript interface |
-| `OuterEnum.ts` | 枚举 |
+| `OuterProtocol.ts` | `OuterSend` / `OuterRpc` / `OuterPush` 绑定表 |
 | `RouteType.ts` / `RoamingType.ts` | 路由 / 漫游常量 |
 | `ProtoOuterDispatcherInit.ts` | 注册到 `ProtoOuterDispatcher` |
 
-另需与服务器一致的 Outer `.proto`，供 `protobufjs` 加载编码/解码。
+**不再生成** `OuterMessage.ts` / `OuterEnum.ts`：消息与枚举类型由 Cocos 工程 `npm run build:proto` 产出的 `outer_pb.d.ts` 提供。
 
 ## 与 net 层对接
 
 ```ts
-import protobuf from 'protobufjs';
 import { netChannel, NetConfig } from 'fantasy-cocos';
 import { ProtoOuterDispatcher } from 'fantasy-cocos/protobuf';
 import { OuterOpcode } from './OuterOpcode';
+import { OuterSend, OuterRpc } from './OuterProtocol';
 import { registerOuterProtobufMessages } from './ProtoOuterDispatcherInit';
+import { getOuterProtoRoot } from '../pb'; // Cocos：assets/scripts/proto/pb
 
-const root = await protobuf.load('OuterMessage.proto');
-const dispatcher = new ProtoOuterDispatcher(root);
+const dispatcher = new ProtoOuterDispatcher(getOuterProtoRoot());
 registerOuterProtobufMessages(dispatcher);
 
 NetConfig.gameIp = '127.0.0.1';
@@ -46,14 +45,10 @@ netChannel.gameCreate();
 netChannel.game.setProtoDispatcher(dispatcher);
 netChannel.gameConnect();
 
-// 通知
-netChannel.game.notify(OuterOpcode.C2G_TestMessage, 'C2G_TestMessage', { Tag: 'hello' });
+netChannel.game.send(OuterSend.C2G_TestMessage, { Tag: 'hello' });
 
-// RPC
-const ret = await netChannel.game.req(
-  OuterOpcode.C2G_LoginGameRequest,
-  'C2G_LoginGameRequest',
-  'G2C_LoginGameResponse',
+const ret = await netChannel.game.call(
+  OuterRpc.C2G_LoginGameRequest,
   { AccountName: 'demo' }
 );
 ```

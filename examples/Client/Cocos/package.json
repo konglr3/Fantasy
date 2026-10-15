@@ -7,8 +7,12 @@
   "dependencies": {
     "protobufjs": "^7.4.0"
   },
+  "devDependencies": {
+    "protobufjs-cli": "^1.1.3"
+  },
   "scripts": {
     "link:fantasy-cocos": "node ./scripts/link-fantasy-cocos-extension.mjs",
-    "postinstall": "npm run link:fantasy-cocos"
+    "build:proto": "node ./scripts/build-proto.mjs",
+    "postinstall": "npm run link:fantasy-cocos && npm run build:proto"
   }
 }

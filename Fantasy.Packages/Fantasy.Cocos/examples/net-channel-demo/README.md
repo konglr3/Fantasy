@@ -38,23 +38,16 @@ netChannel.game.callRpc(
 | 文件 | 作用 |
 |------|------|
 | `OuterOpcode.ts` | OpCode 常量 |
-| `OuterMessage.ts` | 消息 interface（含 `__responseType` 文档） |
 | `OuterProtocol.ts` | `OuterSend` / `OuterRpc` / `OuterPush` 绑定表 |
 | `ProtoOuterDispatcherInit.ts` | protobufjs 注册 |
+| `outer_pb.d.ts`（`npm run build:proto`） | 消息 / 枚举类型 |
 
 ## 前置
 
-1. ProtocolExportTool 导出到 `src/proto`
-2. 准备与服务器一致的 Outer `.proto`
+1. ProtocolExportTool 导出到 `src/proto`（Opcode / Protocol / DispatcherInit）
+2. Cocos 工程 `npm run build:proto` 生成静态 pb
 3. Gate WebSocket 监听（默认 `127.0.0.1:20000`）
 
 ## 运行入口
 
-```ts
-import { runNetChannelDemo } from './main';
-
-const stop = await runNetChannelDemo({
-  protoRootOrPath: 'db://assets/resources/proto/OuterMessage.proto',
-  autoSendTest: true,
-});
-```
+见 `examples/Client/Cocos` 的 `FantasyNetChannelDemo`（`getOuterProtoRoot()` + `OuterSend`/`OuterRpc`）。
