@@ -54,7 +54,10 @@ npm install
 ```bash
 dotnet run --project Fantasy.Packages/Fantasy.ProtocolExportTool -- export -S --config examples/Tools/ProtocolExportTool/ExporterSettings.json
 npm run build:proto
+# 全量消息（不过滤）：PROTO_FULL=1 npm run build:proto
 ```
+
+`build:proto` 会裁剪 pbjs 非必要方法（verify/convert/create 等），并默认只生成 `ProtoOuterDispatcherInit` 已注册消息。
 
 Demo 启动时 `import` 静态 `outer_pb`，**不再** `resources.loadDir('proto')` 解析 `.proto`。
 

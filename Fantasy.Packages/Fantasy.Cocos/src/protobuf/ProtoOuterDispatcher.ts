@@ -20,7 +20,8 @@ export interface DecodeErrorEvent {
 export interface StaticProtoType {
   name?: string;
   fullName?: string;
-  create(properties?: Record<string, unknown>): object;
+  /** pbjs --no-create 时不存在；encode 可直接传 plain object */
+  create?(properties?: Record<string, unknown>): object;
   encode(message: object, writer?: Writer): Writer;
   decode(reader: Uint8Array | object, length?: number): Message;
   verify?(message: object): string | null;
@@ -151,7 +152,9 @@ export class ProtoOuterDispatcher {
         throw new Error(`[ProtoOuterDispatcher] verify failed: ${err}`);
       }
     }
-    const msg = t.create(plain);
+    // pbjs --no-create 时无 create；encode 可直接吃 plain object
+    const msg =
+      typeof t.create === 'function' ? t.create(plain) : (plain as unknown as Message);
     return t.encode(msg).finish();
   }
 

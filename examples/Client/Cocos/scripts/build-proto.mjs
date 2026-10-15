@@ -2,10 +2,16 @@
  * 将 Config/NetworkProtocol/Outer/*.proto 规范化后，用 pbjs/pbts 生成静态模块
  * （对齐 oops-net assets/script/libs/proto/output 的 static-module 格式）。
  *
+ * 裁剪：去掉 create / verify / convert / delimited / getTypeUrl / JSDoc。
+ * 过滤：仅保留 ProtoOuterDispatcherInit 注册的消息及其依赖类型。
+ *
  * 输出：
  *   assets/scripts/proto/pb/outer_pb.js
  *   assets/scripts/proto/pb/outer_pb.d.ts
  *   assets/scripts/proto/pb/index.ts
+ *
+ * 环境变量：
+ *   PROTO_FULL=1  — 不过滤消息（生成 Outer 全量）
  */
 import { execFileSync } from 'child_process';
 import {
@@ -19,6 +25,7 @@ import {
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
+import protobuf from 'protobufjs';
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -26,6 +33,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outerSrcDir = join(root, '../../Config/NetworkProtocol/Outer');
 const outDir = join(root, 'assets/scripts/proto/pb');
 const tmpDir = join(root, '.tmp-proto-build');
+const dispatcherInitPath = join(root, 'assets/scripts/proto/ProtoOuterDispatcherInit.ts');
+const fullBundle = process.env.PROTO_FULL === '1';
 
 /** 与 Fantasy.Cocos normalizeFantasyProtoSource 保持一致 */
 function normalizeFantasyProtoSource(source) {
@@ -38,6 +47,114 @@ function normalizeFantasyProtoSource(source) {
 
 function resolveBin(name) {
   return require.resolve(`protobufjs-cli/bin/${name}`);
+}
+
+/** 从 DispatcherInit 收集已注册消息短名 */
+function collectClientMessageSeeds(initPath) {
+  if (!existsSync(initPath)) {
+    console.warn('[build:proto] DispatcherInit missing, skip message filter:', initPath);
+    return null;
+  }
+  const src = readFileSync(initPath, 'utf8');
+  const seeds = new Set();
+  const re = /\.register\s*\(\s*[^,]+,\s*['"]([^'"]+)['"]\s*\)/g;
+  let m;
+  while ((m = re.exec(src)) !== null) {
+    const name = m[1];
+    // 取短名：Fantasy.Network.Message.C2G_X → C2G_X
+    const short = name.includes('.') ? name.split('.').pop() : name;
+    if (short) {
+      seeds.add(short);
+    }
+  }
+  return [...seeds].sort();
+}
+
+/**
+ * 按种子消息保留依赖（含嵌套 package），其余从 Root 删除。
+ * pbjs 自带 --filter 只支持一层 package，无法处理 Fantasy.Network.Message。
+ */
+function pruneRootToClientMessages(pbRoot, seedNames) {
+  pbRoot.resolveAll();
+  const keep = new Set();
+
+  function mark(type) {
+    if (!type || keep.has(type.fullName)) {
+      return;
+    }
+    keep.add(type.fullName);
+    if (typeof type.fieldsArray !== 'undefined') {
+      for (const field of type.fieldsArray) {
+        if (field.resolvedType) {
+          mark(field.resolvedType);
+        }
+      }
+    }
+    if (type.nestedArray) {
+      for (const nested of type.nestedArray) {
+        if (nested instanceof protobuf.Type || nested instanceof protobuf.Enum) {
+          mark(nested);
+        }
+      }
+    }
+  }
+
+  const missing = [];
+  for (const name of seedNames) {
+    const candidates = [
+      name,
+      `Fantasy.Network.Message.${name}`,
+      `.${name}`,
+      `.Fantasy.Network.Message.${name}`,
+    ];
+    let found = null;
+    for (const c of candidates) {
+      try {
+        found = pbRoot.lookupTypeOrEnum(c);
+        if (found) {
+          break;
+        }
+      } catch {
+        // try next
+      }
+    }
+    if (!found) {
+      missing.push(name);
+      continue;
+    }
+    mark(found);
+  }
+
+  if (missing.length) {
+    console.warn('[build:proto] seeds not found in protos:', missing.join(', '));
+  }
+
+  function pruneNs(ns) {
+    if (!ns.nested) {
+      return;
+    }
+    for (const key of Object.keys(ns.nested)) {
+      const child = ns.nested[key];
+      if (child instanceof protobuf.Type || child instanceof protobuf.Enum) {
+        if (!keep.has(child.fullName)) {
+          delete ns.nested[key];
+          ns._nestedArray = null;
+        }
+      } else if (child instanceof protobuf.Namespace) {
+        pruneNs(child);
+        const left = child.nestedArray ? child.nestedArray.length : 0;
+        if (left === 0) {
+          delete ns.nested[key];
+          ns._nestedArray = null;
+        }
+      }
+    }
+  }
+
+  pruneNs(pbRoot);
+  console.log(
+    `[build:proto] kept ${keep.size} types/enums from ${seedNames.length} client seeds`
+  );
 }
 
 /**
@@ -123,28 +240,64 @@ const dtsOut = join(outDir, 'outer_pb.d.ts');
 const pbjs = resolveBin('pbjs');
 const pbts = resolveBin('pbts');
 
+/**
+ * pbjs 静态模块裁剪：客户端只需 encode/decode。
+ * 注意：不能对「给 pbts 用的」产物加 --no-comments，否则 d.ts 几乎为空。
+ */
+const trimFlags = [
+  '--no-create',
+  '--no-verify',
+  '--no-convert',
+  '--no-delimited',
+  '--no-typeurl',
+];
+
+let pbjsInputPaths = normalizedPaths;
+
+if (!fullBundle) {
+  const seeds = collectClientMessageSeeds(dispatcherInitPath);
+  if (seeds && seeds.length > 0) {
+    const pbRoot = new protobuf.Root();
+    // sync load keeps script simple (no top-level await needed)
+    protobuf.loadSync(normalizedPaths, pbRoot);
+    pruneRootToClientMessages(pbRoot, seeds);
+    const jsonPath = join(tmpDir, 'outer.pruned.json');
+    writeFileSync(jsonPath, JSON.stringify(pbRoot.toJSON(), null, 2), 'utf8');
+    pbjsInputPaths = [jsonPath];
+    console.log('[build:proto] wrote pruned descriptor', jsonPath);
+  }
+} else {
+  console.log('[build:proto] PROTO_FULL=1 — generating all Outer messages');
+}
+
+const pbjsBaseArgs = [
+  pbjs,
+  '-t',
+  'static-module',
+  '-w',
+  'commonjs',
+  // Creator 需要带 .js 后缀才能解析 npm 子路径（见官方 protobuf 示例）
+  '--dependency',
+  'protobufjs/minimal.js',
+  '-r',
+  'FantasyOuter',
+  '--keep-case',
+  ...trimFlags,
+];
+
+// 带 JSDoc 的中间产物：供 pbts 解析类型
+const jsForDts = join(tmpDir, 'outer_pb.for-dts.js');
+execFileSync(process.execPath, [...pbjsBaseArgs, '-o', jsForDts, ...pbjsInputPaths], {
+  stdio: 'inherit',
+});
+execFileSync(process.execPath, [pbts, '-o', dtsOut, jsForDts], { stdio: 'inherit' });
+
+// 运行时产物：去掉注释以减小体积
 execFileSync(
   process.execPath,
-  [
-    pbjs,
-    '-t',
-    'static-module',
-    '-w',
-    'commonjs',
-    // Creator 需要带 .js 后缀才能解析 npm 子路径（见官方 protobuf 示例）
-    '--dependency',
-    'protobufjs/minimal.js',
-    '-r',
-    'FantasyOuter',
-    '--keep-case',
-    '-o',
-    jsOut,
-    ...normalizedPaths,
-  ],
+  [...pbjsBaseArgs, '--no-comments', '-o', jsOut, ...pbjsInputPaths],
   { stdio: 'inherit' }
 );
-
-execFileSync(process.execPath, [pbts, '-o', dtsOut, jsOut], { stdio: 'inherit' });
 
 {
   let dts = readFileSync(dtsOut, 'utf8');
@@ -195,6 +348,7 @@ export default getOuterProtoRoot;
 );
 
 rmSync(tmpDir, { recursive: true, force: true });
-console.log('[build:proto] wrote', jsOut);
+const jsBytes = readFileSync(jsOut).length;
+console.log('[build:proto] wrote', jsOut, `(${jsBytes} bytes)`);
 console.log('[build:proto] wrote', dtsOut);
 console.log('[build:proto] wrote', join(outDir, 'index.ts'));

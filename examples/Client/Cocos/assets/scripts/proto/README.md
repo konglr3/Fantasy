@@ -39,11 +39,17 @@ dotnet run --project Fantasy.Packages/Fantasy.ProtocolExportTool -- export -S --
 ```bash
 cd examples/Client/Cocos
 npm run build:proto
+# 全量（不过滤消息）：PROTO_FULL=1 npm run build:proto
 ```
+
+裁剪策略（减小 `outer_pb.js`）：
+
+- pbjs：`--no-create --no-verify --no-convert --no-delimited --no-typeurl`，运行时再 `--no-comments`（只留 encode/decode；带注释中间文件仅供 pbts）
+- 默认只生成 `ProtoOuterDispatcherInit` 已注册消息及其依赖；`PROTO_FULL=1` 关闭过滤
 
 | 文件 | 说明 |
 |------|------|
-| `pb/outer_pb.js` | 静态编解码 |
+| `pb/outer_pb.js` | 静态编解码（已裁剪） |
 | `pb/outer_pb.d.ts` | 消息 / 枚举类型；`*Response` 已注入 `errorCode` |
 | `pb/index.ts` | `getOuterProtoRoot()` |
 
